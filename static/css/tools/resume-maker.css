@@ -1,0 +1,87 @@
+/* FreeHandyly Resume Maker: form, live preview and print styles. Paper content width matches the printed A4 page. */
+.rs { display: grid; grid-template-columns: minmax(300px, 430px) 1fr; gap: 1.2rem; align-items: start; }
+.rs-top { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: .8rem; }
+.rs-sec { border: 1px solid var(--line); border-radius: 14px; background: #fff; margin-bottom: .6rem; }
+.rs-sec > summary { cursor: pointer; padding: .7rem 1rem; font-weight: 800; font-family: var(--font-display); list-style: none; display: flex; justify-content: space-between; align-items: center; }
+.rs-sec > summary::-webkit-details-marker { display: none; }
+.rs-sec > summary::after { content: "+"; font-size: 1.3rem; line-height: 1; color: var(--blue); transition: transform .2s var(--ease); }
+.rs-sec[open] > summary::after { transform: rotate(45deg); }
+.rs-sec[open] > summary { border-bottom: 1px solid var(--line); }
+.rs-body { padding: .9rem 1rem; }
+.rs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+.rs-grid .full { grid-column: 1 / -1; }
+.rs-tpls { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; }
+.rs-tpl input { position: absolute; opacity: 0; pointer-events: none; }
+.rs-tpl-card { display: flex; flex-direction: column; align-items: center; gap: .3rem; padding: .5rem; border: 2px solid var(--line); border-radius: 12px; font-size: .8rem; font-weight: 700; cursor: pointer; transition: border-color .2s, box-shadow .2s, transform .2s var(--ease); }
+.rs-tpl-card:hover { transform: translateY(-2px); border-color: #A9C4EE; }
+.rs-tpl input:checked + .rs-tpl-card { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(10, 99, 232, .15); }
+.rs-tpl input:focus-visible + .rs-tpl-card { outline: 3px solid var(--teal); outline-offset: 2px; }
+.rs-tpl-card i { display: block; width: 100%; height: 54px; border-radius: 6px; background: #fff; border: 1px solid var(--line); position: relative; overflow: hidden; }
+.rs-tpl-card i::before { content: ""; position: absolute; left: 6px; right: 6px; top: 6px; height: 12px; border-radius: 3px; background: #0A63E8; }
+.rs-tpl-card i::after { content: ""; position: absolute; left: 6px; right: 14px; top: 26px; height: 20px; background: repeating-linear-gradient(#CBD5E1 0 3px, transparent 3px 7px); }
+.t-classic::before { background: #1F2937 !important; left: 20px !important; right: 20px !important; height: 6px !important; }
+.t-minimal::before { background: #7B3FE4 !important; right: 50% !important; height: 6px !important; }
+.rs-swatches { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.rs-swatches button { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); cursor: pointer; transition: transform .15s var(--ease); }
+.rs-swatches button:hover, .rs-swatches button.on { transform: scale(1.18); box-shadow: 0 0 0 2px var(--navy); }
+.rs-swatches input[type="color"] { width: 34px; height: 28px; padding: 0; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; }
+.rs-card { border: 1px dashed #B9CCE8; border-radius: 12px; padding: .7rem; margin-bottom: .6rem; background: var(--paper); }
+.rs-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; font-weight: 700; font-size: .85rem; }
+.rs-card-head .pe-mini { width: 28px; height: 28px; }
+.rs-card .form-control { font-size: .9rem; padding: .35rem .6rem; }
+.rs-preview { position: sticky; top: 84px; }
+.rs-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: .6rem; gap: .6rem; }
+.rs-scroll { overflow: auto; max-height: 82vh; padding: 12px; background: #DDE6F2; border: 1px solid var(--line); border-radius: 14px; }
+.rs-sizer { position: relative; margin: 0 auto; }
+.rs-paper { box-sizing: border-box; width: 794px; min-height: 1123px; padding: 12mm 13mm; background: #fff; color: #1b1f24; box-shadow: 0 10px 34px -10px rgba(11, 35, 71, .45); transform-origin: 0 0; font-family: Inter, "Segoe UI", system-ui, Arial, sans-serif; font-size: var(--fs, 10.5pt); line-height: 1.4; }
+
+/* ----- paper contents ----- */
+.rs-paper :where(h1, h2, h3, p, ul) { margin: 0; padding: 0; }
+.rs-paper :where(h1, h2, h3) { font-family: inherit; letter-spacing: 0; color: inherit; }
+.rs-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 14px; }
+.rs-name { font-size: 2.3em; font-weight: 800; line-height: 1.1; }
+.rs-jobtitle { font-size: 1.2em; margin-top: 2px; }
+.rs-contact { display: flex; flex-wrap: wrap; gap: 2px 14px; margin-top: 8px; font-size: .92em; }
+.rs-photo { flex: none; width: 88px; height: 88px; border-radius: 50%; object-fit: cover; }
+.rs-h { font-size: 1.02em; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; margin: 16px 0 8px; break-after: avoid; }
+.rs-entry { margin-bottom: 10px; break-inside: avoid; }
+.rs-line { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.rs-role { font-weight: 700; } .rs-date { font-size: .9em; white-space: nowrap; color: #4b5563; }
+.rs-sub { font-size: .95em; color: #374151; }
+.rs-entry ul { margin: 4px 0 0 1.15em; list-style: disc; } .rs-entry li { margin-bottom: 2px; }
+.rs-text { white-space: pre-line; }
+.rs-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rs-chip { font-size: .92em; padding: 2px 10px; border-radius: 999px; }
+
+/* Modern */
+.rs-modern .rs-headband { background: var(--accent); color: #fff; border-radius: 10px; padding: 18px 22px; margin-bottom: 4px; }
+.rs-modern .rs-head { margin-bottom: 0; }
+.rs-modern .rs-photo { border: 3px solid rgba(255, 255, 255, .8); }
+.rs-modern .rs-h { color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 3px; }
+.rs-modern .rs-chip { background: rgba(0, 0, 0, .06); border: 1px solid rgba(0, 0, 0, .1); }
+/* Classic */
+.rs-classic { font-family: Georgia, "Times New Roman", Times, serif; }
+.rs-classic .rs-head { flex-direction: column; text-align: center; margin-bottom: 6px; }
+.rs-classic .rs-contact { justify-content: center; } .rs-classic .rs-name { font-size: 2.1em; letter-spacing: .04em; text-transform: uppercase; }
+.rs-classic .rs-photo { border-radius: 4px; width: 80px; height: 96px; }
+.rs-classic .rs-h { border-bottom: 1px solid #111; padding-bottom: 2px; letter-spacing: .1em; }
+.rs-classic .rs-chips { display: block; } .rs-classic .rs-chip { display: inline; padding: 0; font-size: 1em; border-radius: 0; }
+.rs-classic .rs-chip:not(:last-child)::after { content: " \2022  "; }
+/* Minimal */
+.rs-minimal .rs-name { font-weight: 300; font-size: 2.6em; letter-spacing: -.01em; }
+.rs-minimal .rs-jobtitle { color: var(--accent); font-weight: 600; }
+.rs-minimal .rs-h { color: var(--accent); letter-spacing: .14em; font-size: .88em; margin-top: 18px; }
+.rs-minimal .rs-chip { border: 1px solid var(--accent); color: var(--accent); background: transparent; }
+
+@media (max-width: 991.98px) { .rs { grid-template-columns: 1fr; } .rs-preview { position: static; } .rs-scroll { max-height: none; } }
+
+/* ----- printing: only the resume, with A4 margins ----- */
+@page { size: A4; margin: 12mm 13mm; }
+#rs-print-root { display: none; }
+@media print {
+  body.rs-printing { background: #fff !important; }
+  body.rs-printing > *:not(#rs-print-root) { display: none !important; }
+  body.rs-printing #rs-print-root { display: block !important; }
+  #rs-print-root, #rs-print-root * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #rs-print-root .rs-paper { width: auto; min-height: 0; padding: 0; margin: 0; box-shadow: none; transform: none !important; }
+}

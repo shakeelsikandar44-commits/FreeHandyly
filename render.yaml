@@ -1,0 +1,33 @@
+# Render Blueprint for FreeHandyly. In Render: New + > Blueprint > pick this repository.
+# Custom domains are added in the Render dashboard (not in this file): see README, "Deploying on Render".
+services:
+  - type: web
+    name: freehandyly
+    runtime: python
+    plan: free            # free sleeps after ~15 minutes idle. Change to "starter" for an always-on site.
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 2 --threads 4 --timeout 60 --access-logfile -
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: SITE_URL
+        value: https://freehandyly.com
+      - key: SECRET_KEY
+        generateValue: true
+      - key: TRUST_PROXY
+        value: "1"
+      - key: FORCE_HTTPS
+        value: "1"
+      - key: CONTACT_TO
+        value: contact@freehandyly.com
+      # Contact-form e-mail (optional). Render asks for these values when you create the Blueprint.
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: CONTACT_FROM
+        sync: false

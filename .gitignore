@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+# Secrets and local data
+.env
+instance/
+tests/.tmp-contact/
+*.log
+# Tooling
+node_modules/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
