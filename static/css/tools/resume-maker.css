@@ -1,5 +1,6 @@
 /* FreeHandyly Resume Maker: form, live preview and print styles. Paper content width matches the printed A4 page. */
-.rs { display: grid; grid-template-columns: minmax(300px, 430px) 1fr; gap: 1.2rem; align-items: start; }
+.rs { display: grid; grid-template-columns: minmax(300px, 430px) minmax(0, 1fr); gap: 1.2rem; align-items: start; }
+.rs > * { min-width: 0; }
 .rs-top { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: .8rem; }
 .rs-sec { border: 1px solid var(--line); border-radius: 14px; background: #fff; margin-bottom: .6rem; }
 .rs-sec > summary { cursor: pointer; padding: .7rem 1rem; font-weight: 800; font-family: var(--font-display); list-style: none; display: flex; justify-content: space-between; align-items: center; }
@@ -73,7 +74,7 @@
 .rs-minimal .rs-h { color: var(--accent); letter-spacing: .14em; font-size: .88em; margin-top: 18px; }
 .rs-minimal .rs-chip { border: 1px solid var(--accent); color: var(--accent); background: transparent; }
 
-@media (max-width: 991.98px) { .rs { grid-template-columns: 1fr; } .rs-preview { position: static; } .rs-scroll { max-height: none; } }
+@media (max-width: 991.98px) { .rs { grid-template-columns: minmax(0, 1fr); } .rs-preview { position: static; } .rs-scroll { max-height: none; } }
 
 /* ----- printing: only the resume, with A4 margins ----- */
 @page { size: A4; margin: 12mm 13mm; }
