@@ -605,6 +605,7 @@
     fit: function () { fitZoom(); setZoom(zoom); },
     open: function () { $('pe-file').click(); },
     image: function () { $('pe-img-file').click(); },
+    sign: function () { sgOpen(); },
     download: function () { download(); }
   };
   app.addEventListener('click', function (e) {
@@ -614,7 +615,7 @@
   });
 
   document.addEventListener('keydown', function (e) {
-    if (app.hidden) { return; }
+    if (app.hidden || sgDlg.open) { return; }
     var tag = (e.target && e.target.tagName) || '';
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') { return; }
     var mod = e.ctrlKey || e.metaKey;
@@ -626,26 +627,138 @@
   });
 
   /* ---------------------------------------------------------------- images */
+  /* Puts a canvas on the current page as a movable, resizable picture (frac = starting width as a share of the page). */
+  function placeCanvas(c, frac, msg) {
+    return U.canvasToBlob(c, 'image/png').then(function (blob) { return readBytes(blob); }).then(function (bytes) {
+      return new Promise(function (resolve) {
+        var el = new Image(), id = uid(), url = URL.createObjectURL(new Blob([bytes], { type: 'image/png' }));
+        el.onload = function () {
+          images[id] = { bytes: bytes, el: el, w: c.width, h: c.height };
+          var p = pages[cur], w = Math.min(p.w * frac, c.width), h = w * c.height / c.width;
+          var a = { id: uid(), t: 'img', img: id, x1: (p.w - w) / 2, y1: (p.h - h) / 2, x2: (p.w + w) / 2, y2: (p.h + h) / 2 };
+          p.annots.push(a); sel = a.id; setTool('select'); commit(); drawOverlay(); status(msg); resolve();
+        };
+        el.src = url;
+      });
+    });
+  }
   $('pe-img-file').addEventListener('change', function () {
     var f = this.files && this.files[0]; this.value = ''; if (!f) { return; }
     U.loadImage(f).then(function (img) {
       var s = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
       c.width = Math.max(1, Math.round(img.naturalWidth * s)); c.height = Math.max(1, Math.round(img.naturalHeight * s));
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-      return U.canvasToBlob(c, 'image/png').then(function (blob) {
-        return readBytes(blob).then(function (bytes) { return { bytes: bytes, c: c }; });
-      });
-    }).then(function (r) {
-      var el = new Image(), id = uid(), url = URL.createObjectURL(new Blob([r.bytes], { type: 'image/png' }));
-      el.onload = function () {
-        images[id] = { bytes: r.bytes, el: el, w: r.c.width, h: r.c.height };
-        var p = pages[cur], w = Math.min(p.w * 0.4, r.c.width), h = w * r.c.height / r.c.width;
-        var a = { id: uid(), t: 'img', img: id, x1: (p.w - w) / 2, y1: (p.h - h) / 2, x2: (p.w + w) / 2, y2: (p.h + h) / 2 };
-        p.annots.push(a); sel = a.id; setTool('select'); commit(); drawOverlay(); status('Image added. Drag it to move, or drag the corner square to resize.');
-      };
-      el.src = url;
+      return placeCanvas(c, 0.4, 'Image added. Drag it to move, or drag the corner square to resize.');
     }, function () { status('That image could not be read.', true); });
   });
+
+  /* ------------------------------------------------------------- signature */
+  var SG_KEY = 'fh-pdf-signature';
+  var sgDlg = $('pe-sign'), sgPad = $('pe-sign-pad'), sgTyped = $('pe-sign-typed'), sgUp = $('pe-sign-up'), sgMsg = $('pe-sign-msg');
+  var sgMode = 'draw', sgStrokes = [], sgLive = null, sgUploaded = null;
+  var SG_FONTS = {
+    script: 'italic 400 {s}px "Brush Script MT","Segoe Script","Snell Roundhand","Apple Chancery","URW Chancery L",cursive',
+    casual: 'italic 400 {s}px "Segoe Script","Bradley Hand","Lucida Handwriting","Comic Sans MS",cursive',
+    classic: 'italic 400 {s}px Georgia,"Times New Roman",serif'
+  };
+  function sgSay(m) { sgMsg.textContent = m || ''; sgMsg.hidden = !m; }
+  function sgInk() { return $('pe-sign-color').value; }
+  function sgRenderPad() {
+    var x = sgPad.getContext('2d'); x.clearRect(0, 0, sgPad.width, sgPad.height);
+    x.strokeStyle = x.fillStyle = sgInk(); x.lineWidth = 4; x.lineCap = x.lineJoin = 'round';
+    sgStrokes.forEach(function (s) {
+      if (s.length === 1) { x.beginPath(); x.arc(s[0][0], s[0][1], 2.2, 0, 6.2832); x.fill(); return; }
+      x.beginPath(); x.moveTo(s[0][0], s[0][1]);
+      for (var i = 1; i < s.length - 1; i++) { x.quadraticCurveTo(s[i][0], s[i][1], (s[i][0] + s[i + 1][0]) / 2, (s[i][1] + s[i + 1][1]) / 2); }
+      x.lineTo(s[s.length - 1][0], s[s.length - 1][1]); x.stroke();
+    });
+  }
+  function sgPoint(e) { var r = sgPad.getBoundingClientRect(); return [(e.clientX - r.left) * sgPad.width / r.width, (e.clientY - r.top) * sgPad.height / r.height]; }
+  sgPad.addEventListener('pointerdown', function (e) {
+    e.preventDefault(); sgSay(''); try { sgPad.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    sgLive = [sgPoint(e)]; sgStrokes.push(sgLive); sgRenderPad();
+  });
+  sgPad.addEventListener('pointermove', function (e) { if (!sgLive) { return; } sgLive.push(sgPoint(e)); sgRenderPad(); });
+  ['pointerup', 'pointercancel'].forEach(function (n) { sgPad.addEventListener(n, function () { sgLive = null; }); });
+  $('pe-sign-clear').addEventListener('click', function () { sgStrokes = []; sgRenderPad(); });
+  $('pe-sign-color').addEventListener('change', function () { sgRenderPad(); sgRenderTyped(); });
+
+  function sgRenderTyped() {
+    var txt = $('pe-sign-text').value.trim(), fam = SG_FONTS[$('pe-sign-font').value] || SG_FONTS.script, size = 120;
+    var m = document.createElement('canvas').getContext('2d'); m.font = fam.replace('{s}', size);
+    var w = Math.max(40, Math.ceil(m.measureText(txt || ' ').width) + 60), h = 200;
+    if (w > 1400) { size = Math.floor(size * 1400 / w); w = 1400; m.font = fam.replace('{s}', size); }
+    sgTyped.width = w; sgTyped.height = h;
+    var x = sgTyped.getContext('2d'); x.clearRect(0, 0, w, h); x.font = fam.replace('{s}', size); x.fillStyle = sgInk(); x.textBaseline = 'middle';
+    if (txt) { x.fillText(txt, 30, h / 2 + 4); }
+  }
+  $('pe-sign-text').addEventListener('input', function () { sgSay(''); sgRenderTyped(); });
+  $('pe-sign-font').addEventListener('change', sgRenderTyped);
+  $('pe-sign-text').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('pe-sign-insert').click(); } });
+
+  /* Uploaded photo: keep the dark ink, fade the paper to transparent. */
+  $('pe-sign-file').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) { return; }
+    U.loadImage(f).then(function (img) {
+      var s = Math.min(1, 1000 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.naturalWidth * s)); c.height = Math.max(1, Math.round(img.naturalHeight * s));
+      var x = c.getContext('2d'); x.drawImage(img, 0, 0, c.width, c.height);
+      var d = x.getImageData(0, 0, c.width, c.height), px = d.data;
+      for (var i = 0; i < px.length; i += 4) {
+        var luma = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+        var keep = Math.max(0, Math.min(1, (225 - luma) / 70));
+        px[i + 3] = Math.round(px[i + 3] * keep);
+        if (keep > 0) { px[i] = px[i + 1] = px[i + 2] = Math.min(luma, 60); }
+      }
+      x.putImageData(d, 0, 0); sgUploaded = c; sgSay('');
+      var pv = sgUp.getContext('2d'), r = Math.min(sgUp.width / c.width, sgUp.height / c.height);
+      pv.clearRect(0, 0, sgUp.width, sgUp.height); pv.drawImage(c, (sgUp.width - c.width * r) / 2, (sgUp.height - c.height * r) / 2, c.width * r, c.height * r);
+    }, function () { sgUploaded = null; sgSay('That image could not be read. Try a JPG or PNG.'); });
+  });
+
+  function sgTrim(c) {
+    var w = c.width, h = c.height, d = c.getContext('2d').getImageData(0, 0, w, h).data, x0 = w, y0 = h, x1 = -1, y1 = -1;
+    for (var y = 0; y < h; y++) { for (var x = 0; x < w; x++) { if (d[(y * w + x) * 4 + 3] > 12) { if (x < x0) { x0 = x; } if (x > x1) { x1 = x; } if (y < y0) { y0 = y; } if (y > y1) { y1 = y; } } } }
+    if (x1 < 0) { return null; }
+    var pad = 8; x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad); x1 = Math.min(w - 1, x1 + pad); y1 = Math.min(h - 1, y1 + pad);
+    var o = document.createElement('canvas'); o.width = x1 - x0 + 1; o.height = y1 - y0 + 1;
+    o.getContext('2d').drawImage(c, x0, y0, o.width, o.height, 0, 0, o.width, o.height); return o;
+  }
+  function sgSource() { return sgMode === 'draw' ? sgPad : (sgMode === 'type' ? sgTyped : sgUploaded); }
+
+  function sgSetTab(m) {
+    sgMode = m; sgSay('');
+    Array.prototype.forEach.call(sgDlg.querySelectorAll('[data-sg-tab]'), function (b) { var on = b.getAttribute('data-sg-tab') === m; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    Array.prototype.forEach.call(sgDlg.querySelectorAll('[data-sg-panel]'), function (p) { p.hidden = p.getAttribute('data-sg-panel') !== m; });
+    if (m === 'type') { sgRenderTyped(); $('pe-sign-text').focus(); }
+  }
+  sgDlg.addEventListener('click', function (e) { var b = e.target.closest('[data-sg-tab]'); if (b) { sgSetTab(b.getAttribute('data-sg-tab')); } });
+
+  function sgStored() { try { return window.localStorage.getItem(SG_KEY) || ''; } catch (e) { return ''; } }
+  function sgOpen() {
+    if (!pages.length) { return; }
+    sgStrokes = []; sgLive = null; sgUploaded = null; $('pe-sign-text').value = ''; $('pe-sign-file').value = ''; $('pe-sign-save').checked = false;
+    sgUp.getContext('2d').clearRect(0, 0, sgUp.width, sgUp.height); sgRenderPad(); sgSetTab('draw');
+    $('pe-sign-saved').hidden = !sgStored();
+    if (typeof sgDlg.showModal === 'function') { sgDlg.showModal(); } else { sgDlg.setAttribute('open', ''); }
+  }
+  function sgClose() { if (typeof sgDlg.close === 'function') { sgDlg.close(); } else { sgDlg.removeAttribute('open'); } }
+  $('pe-sign-cancel').addEventListener('click', sgClose);
+  var SG_DONE = 'Signature added. Drag it to move, or drag the corner square to resize. Remember to download your PDF.';
+  $('pe-sign-insert').addEventListener('click', function () {
+    var src = sgSource(), c = src ? sgTrim(src) : null;
+    if (!c) { sgSay(sgMode === 'draw' ? 'Draw your signature in the box first.' : (sgMode === 'type' ? 'Type your name first.' : 'Choose a photo of your signature first.')); return; }
+    if ($('pe-sign-save').checked) { try { window.localStorage.setItem(SG_KEY, c.toDataURL('image/png')); } catch (e) { /* storage unavailable: skip */ } }
+    sgClose(); placeCanvas(c, 0.28, SG_DONE);
+  });
+  $('pe-sign-usesaved').addEventListener('click', function () {
+    var data = sgStored(); if (!data) { return; }
+    var im = new Image();
+    im.onload = function () { var c = document.createElement('canvas'); c.width = im.naturalWidth; c.height = im.naturalHeight; c.getContext('2d').drawImage(im, 0, 0); sgClose(); placeCanvas(c, 0.28, SG_DONE); };
+    im.onerror = function () { sgSay('The saved signature could not be loaded.'); };
+    im.src = data;
+  });
+  $('pe-sign-forget').addEventListener('click', function () { try { window.localStorage.removeItem(SG_KEY); } catch (e) { /* ignore */ } $('pe-sign-saved').hidden = true; });
 
   /* ------------------------------------------------------------------ open */
   function resetState() {

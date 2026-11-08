@@ -494,3 +494,27 @@ img, svg { max-width: 100%; }
 .pe-pass { margin: .6rem 0; padding: .9rem 1rem; background: #FFF9E8; border: 1px solid #F3DB93; border-radius: 12px; }
 .pe-text-input::placeholder { color: #8394AE; font-size: .8em; }
 .fh-promo{min-height:0!important}.fh-promo a{display:inline-block;line-height:0;max-width:100%;border-radius:14px;overflow:hidden;box-shadow:0 6px 18px rgba(0,30,90,.18);transition:transform .25s ease,box-shadow .25s ease}.fh-promo a:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,30,90,.28)}.fh-promo img{display:block;max-width:100%;height:auto}.fh-promo.ad-top img{width:728px}.fh-promo.ad-middle img{width:640px}.fh-promo.ad-sidebar img{width:300px}
+/* PDF editor: signature dialog */
+.pe-sign { border: 0; padding: 0; border-radius: 16px; width: min(560px, calc(100vw - 1.5rem)); max-height: calc(100vh - 2rem); box-shadow: 0 30px 80px -20px rgba(15, 23, 42, .55); color: var(--ink); background: #fff; }
+.pe-sign::backdrop { background: rgba(15, 23, 42, .5); }
+.pe-sign-box { padding: 1.1rem 1.2rem 1.2rem; overflow-y: auto; max-height: calc(100vh - 2rem); }
+.pe-sign-h { font-size: 1.15rem; margin: 0 0 .75rem; }
+.pe-sign-tabs { display: flex; gap: .3rem; margin-bottom: .8rem; border-bottom: 1px solid var(--line); }
+.pe-sign-tab { border: 0; background: transparent; padding: .5rem .9rem; font-weight: 600; color: var(--muted, #5b6478); border-bottom: 3px solid transparent; margin-bottom: -1px; cursor: pointer; }
+.pe-sign-tab.on { color: var(--ink); border-bottom-color: var(--blue); }
+.pe-sign-panel[hidden] { display: none; }
+.pe-sign-pad, .pe-sign-prev { display: block; width: 100%; height: auto; border: 1.5px dashed #b6c0d4; border-radius: 12px; background: #fff; }
+.pe-sign-pad { aspect-ratio: 3 / 1; touch-action: none; cursor: crosshair; background-image: linear-gradient(#fff 0, #fff calc(100% - 44px), #d5dbe8 calc(100% - 44px), #d5dbe8 calc(100% - 43px), #fff calc(100% - 43px)); }
+.pe-sign-prev { margin-top: .7rem; aspect-ratio: 18 / 5; background: repeating-conic-gradient(#f3f5fa 0 25%, #fff 0 50%) 0 0 / 16px 16px; }
+.pe-sign-row { display: flex; align-items: center; gap: .6rem; margin-top: .6rem; flex-wrap: wrap; }
+.pe-sign-lbl { font-weight: 600; font-size: .85rem; margin: 0 0 .25rem; }
+.pe-sign-row .pe-sign-lbl { margin: 0; }
+.pe-sign-sel { width: auto; min-width: 8rem; }
+.pe-sign-note { font-size: .82rem; color: var(--muted, #5b6478); margin: .4rem 0 0; }
+.pe-sign-msg { margin: .7rem 0 0; color: #b42318; font-size: .88rem; font-weight: 600; }
+.pe-sign-save { display: flex; gap: .5rem; align-items: flex-start; margin: .9rem 0 0; font-size: .85rem; }
+.pe-sign-save input { margin-top: .2rem; }
+.pe-sign-saved { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: .7rem; }
+.pe-sign-link { border: 0; background: transparent; color: var(--blue); text-decoration: underline; font-size: .85rem; padding: 0; cursor: pointer; }
+.pe-sign-actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1.1rem; }
+@media (max-width: 480px) { .pe-sign-actions .btn { flex: 1; } }
