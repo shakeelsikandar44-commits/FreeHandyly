@@ -23,7 +23,7 @@ Live site: https://freehandyly.com (set `SITE_URL` to your own address when you 
 | [Currency & Crypto Converter](/tools/currency-crypto-converter) | Free currency converter for 150+ currencies including USD to PKR, plus Bitcoin and Ethereum. Quick, simple and no signup. |
 | [Calorie & Water Calculator](/tools/calorie-water-calculator) | Estimate daily calories (BMR and TDEE) and how much water to drink using the Mifflin-St Jeor formula. Free calculator, no signup. |
 | [BMI Calculator](/tools/bmi-calculator) | Free BMI calculator in metric or imperial. See your BMI category, WHO or South Asian cut-offs and your healthy weight range. No signup. |
-| [Background Remover](/tools/background-remover) | Remove image backgrounds for free and download a transparent PNG. AI for people, one click for plain backgrounds. Photos stay on your device. |
+| [Background Remover](/tools/background-remover) | Remove image backgrounds for free and download a transparent PNG. automatic cutout for people, one click for plain backgrounds. Photos stay on your device. |
 | [Resume Maker](/tools/resume-maker) | Build a professional resume or CV in minutes with templates and accent colors, then save it as PDF. Free, no signup, no watermark. |
 
 ## Tech stack

@@ -154,7 +154,7 @@
     return { removed: removed, share: share };
   }
 
-  /* ------------------------------------------------------------- AI (people) */
+  /* ------------------------------------------------------------- person mode */
   var segPromise = null;
   function loadScript(src) {
     return new Promise(function (res, rej) {
@@ -174,7 +174,7 @@
   }
   function runAI() {
     if (busy) { return; }
-    busy = true; status('Loading the on-device AI model (about 6 MB, first time only)\u2026');
+    busy = true; status('Loading the on-device person-detection model (about 6 MB, first time only)\u2026');
     getSeg().then(function (seg) {
       status('Finding the person\u2026');
       return new Promise(function (resolve, reject) {
@@ -195,7 +195,7 @@
       var share = kept / (W * H);
       status(share < 0.02 ? 'No person was found in this photo. Try \u201CRemove plain background\u201D or the magic wand instead.' : 'Done. Use Erase and Restore to fine-tune, and raise Edge smoothing if the outline looks rough.', share < 0.02);
     }).catch(function () {
-      status('The AI model could not be loaded in this browser. Use \u201CRemove plain background\u201D or the magic wand instead.', true);
+      status('The person-detection model could not be loaded in this browser. Use \u201CRemove plain background\u201D or the magic wand instead.', true);
     }).then(function () { busy = false; });
   }
 
