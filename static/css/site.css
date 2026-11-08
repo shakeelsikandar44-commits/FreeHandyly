@@ -518,3 +518,16 @@ img, svg { max-width: 100%; }
 .pe-sign-link { border: 0; background: transparent; color: var(--blue); text-decoration: underline; font-size: .85rem; padding: 0; cursor: pointer; }
 .pe-sign-actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1.1rem; }
 @media (max-width: 480px) { .pe-sign-actions .btn { flex: 1; } }
+
+.footer-contact { font-style: normal; margin-top: .9rem; font-size: .92rem; line-height: 1.7; }
+.footer-contact a { color: inherit; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, .35); }
+.content-meta { margin-top: 2rem; font-size: .88rem; color: var(--muted, #5b6478); }
+.contact-card { font-style: normal; padding: 1rem 1.2rem; border: 1px solid var(--line); border-radius: 14px; background: #fff; line-height: 1.8; max-width: 26rem; }
+.site-map-list { columns: 2 18rem; column-gap: 2rem; padding-left: 1.1rem; }
+.site-map-list li { break-inside: avoid; margin-bottom: .55rem; }
+.legal .toc { font-size: .95rem; }
+
+.scenario-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.4rem; }
+.scenario-list li { padding: .9rem 1.1rem; background: #fff; border: 1px solid var(--line); border-radius: 14px; line-height: 1.55; }
+.scenario-list a { font-weight: 700; }
+@media (max-width: 767.98px) { .scenario-list { grid-template-columns: minmax(0, 1fr); } }

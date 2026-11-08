@@ -46,7 +46,8 @@ log = logging.getLogger("freehandyly")
 
 # ------------------------------------------------------------------ pages
 TOOLS = json.loads((BASE / "data" / "tools.json").read_text(encoding="utf-8"))
-PAGE_FILES = {"/": "index.html", "/about": "about.html", "/contact": "contact.html", "/privacy-policy": "privacy-policy.html"}
+PAGE_FILES = {"/": "index.html", "/about": "about.html", "/contact": "contact.html", "/privacy-policy": "privacy-policy.html",
+              "/terms": "terms.html", "/disclaimer": "disclaimer.html", "/cookie-policy": "cookie-policy.html", "/site-map": "site-map.html"}
 PAGE_FILES.update({"/tools/" + t["slug"]: "tools/%s.html" % t["slug"] for t in TOOLS})
 HTML = {path: (BASE / "pages" / f).read_text(encoding="utf-8") for path, f in PAGE_FILES.items()}
 SHELL = (BASE / "pages" / "_shell.html").read_text(encoding="utf-8")

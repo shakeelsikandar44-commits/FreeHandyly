@@ -34,7 +34,7 @@
   <link rel="stylesheet" href="/static/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/site.css">
 
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "applicationCategory": "UtilitiesApplication", "browserRequirements": "Requires JavaScript", "description": "Compress JPG, PNG and WebP images online and see exactly how many KB you save. Free, private, with no upload and no signup.", "image": "__SITE_URL__/static/img/og-image.png", "inLanguage": "en", "isAccessibleForFree": true, "name": "Image Compressor", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "operatingSystem": "Any", "publisher": {"@type": "Organization", "logo": {"@type": "ImageObject", "url": "__SITE_URL__/static/img/apple-touch-icon.png"}, "name": "FreeHandyly", "url": "__SITE_URL__/"}, "url": "__SITE_URL__/tools/image-compressor"}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "acceptedAnswer": {"@type": "Answer", "text": "Not when you reduce quality. JPG and WebP compression removes some detail to save space. At moderate settings the difference is hard to see, and you can raise the quality if it is not."}, "name": "Is compression really lossless?"}, {"@type": "Question", "acceptedAnswer": {"@type": "Answer", "text": "No. Compression happens locally in your browser, so your photos stay private."}, "name": "Are my photos uploaded?"}, {"@type": "Question", "acceptedAnswer": {"@type": "Answer", "text": "PNG is lossless, so there is little to remove. Switch the output to WebP or JPG, or reduce the maximum width, for much bigger savings."}, "name": "Why did a PNG barely get smaller?"}, {"@type": "Question", "acceptedAnswer": {"@type": "Answer", "text": "No. Re-encoding in the browser drops EXIF data such as camera model and location, which also helps privacy. Orientation is applied to the pixels."}, "name": "Is image metadata kept?"}, {"@type": "Question", "acceptedAnswer": {"@type": "Answer", "text": "Add the image, lower the quality setting a little at a time and watch the size shown for each file until it fits the limit, such as 100 KB or 1 MB."}, "name": "How do I reduce the size of a JPG for email or a form?"}, {"@type": "Question", "acceptedAnswer": {"@type": "Answer", "text": "For photos, around 70 to 85 percent usually cuts the size a lot with little visible loss. Compare the result with the original before you save it."}, "name": "What quality setting should I use?"}]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "__SITE_URL__/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "__SITE_URL__/tools/image-compressor", "name": "Image Compressor", "position": 2}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "applicationCategory": "UtilitiesApplication", "browserRequirements": "Requires JavaScript", "description": "Compress JPG, PNG and WebP images online and see exactly how many KB you save. Free, private, with no upload and no signup.", "image": "__SITE_URL__/static/img/og-image.png", "inLanguage": "en", "isAccessibleForFree": true, "name": "Image Compressor", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "operatingSystem": "Any", "publisher": {"@type": "Organization", "logo": {"@type": "ImageObject", "url": "__SITE_URL__/static/img/apple-touch-icon.png"}, "name": "FreeHandyly", "url": "__SITE_URL__/"}, "url": "__SITE_URL__/tools/image-compressor"}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much can I reduce an image without losing quality?", "acceptedAnswer": {"@type": "Answer", "text": "For photos, quality 70 to 80 plus a sensible maximum width usually cuts the size by half or more while looking the same on a normal screen."}}, {"@type": "Question", "name": "Which format gives the smallest file?", "acceptedAnswer": {"@type": "Answer", "text": "WebP is normally the smallest. Choose JPG if the file has to open on older software."}}, {"@type": "Question", "name": "Why did the tool keep my original file?", "acceptedAnswer": {"@type": "Answer", "text": "If the compressed version would not have been smaller, the original is kept so you never end up with a bigger file."}}, {"@type": "Question", "name": "Can I compress to an exact size such as 100 KB?", "acceptedAnswer": {"@type": "Answer", "text": "There is no target-size box, but lowering the quality or the maximum width step by step gets you there quickly, and the new size is shown instantly."}}, {"@type": "Question", "name": "Are my images uploaded?", "acceptedAnswer": {"@type": "Answer", "text": "No. All the work happens in your browser."}}]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "__SITE_URL__/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "__SITE_URL__/tools/image-compressor", "name": "Image Compressor", "position": 2}]}]}</script>
   
   
 <meta property="og:locale" content="en_US"><meta property="og:image:alt" content="FreeHandyly - free online tools: PDF editor, calculators, image and text tools"><meta name="author" content="FreeHandyly"><link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"></head>
@@ -156,48 +156,30 @@
 
       
 <article class="seo-content" id="guide">
-  <h2>How to Use the Image Compressor on FreeHandyly</h2>
-  <p>The FreeHandyly Image Compressor shrinks photos and graphics so they load faster, fit email limits and use less storage. You choose the balance between size and quality, see exactly how many kilobytes you saved for every file, and download the result. Nothing is uploaded; the compression runs in your browser.</p>
-  <ol>
-    <li><strong>Add your images.</strong> Click the upload area or drag up to 30 JPG, PNG or WebP files onto it.</li>
-    <li><strong>Pick an output format.</strong> WebP gives the smallest files and is supported by all current browsers. JPG is the most compatible choice for photos. PNG keeps pixels exact but often saves little.</li>
-    <li><strong>Set the quality.</strong> Drag the quality slider. A value near 75 percent usually cuts size dramatically with little visible difference. Lower it for smaller files and raise it when detail matters.</li>
-    <li><strong>Limit the width if you like.</strong> Enter a maximum width, for example 1600 pixels for a blog or 1080 for social media. Resizing large photos saves far more space than quality changes alone.</li>
-    <li><strong>Compare and download.</strong> Each file shows the original size, the new size and the percentage saved. Download single files or the whole batch as a ZIP.</li>
-    
-  </ol>
-
-  <h2>Why This Tool is Helpful</h2>
-  <p>Heavy images are one of the most common reasons a web page loads slowly, especially on mobile data. They also trigger upload errors in forms, bounce back from email and fill phone storage. A smaller file means faster pages, lower bandwidth costs and a better experience for visitors, which also supports better search performance.</p>
-  <ul>
-    <li><strong>Website owners and bloggers</strong> can optimise images before publishing to improve page speed.</li>
-    <li><strong>Online sellers</strong> can meet marketplace file-size limits without re-shooting products.</li>
-    <li><strong>Students and job applicants</strong> can shrink scanned documents and photos to fit upload forms.</li>
-    <li><strong>Developers</strong> can quickly prepare lightweight assets for prototypes and documentation.</li>
-    <li><strong>Everyday phone users</strong> can send pictures by email or messaging apps without waiting.</li>
-    
-  </ul>
-
-  <h3>What to expect from compression</h3>
-  <p>Compression is a trade-off. Lossy formats such as JPG and WebP discard detail the eye is unlikely to notice, which is why the saving can be large, but pushing the quality too low causes blocky edges and blurry text. Screenshots with sharp text look best as PNG or high-quality WebP. If the compressed version turns out to be larger than the original, which can happen with files that were already optimised, the tool keeps the original for download. Always keep an untouched copy of important photos before compressing them.</p>
-  <h3>Best settings for common situations</h3>
-  <p>For blog and website images, choose WebP, a quality near 75 percent and a maximum width of 1600 pixels, which suits most layouts and often reduces files by more than half. For email attachments and form uploads, JPG at 70 to 80 percent is the safest choice because every system opens it. For screenshots with small text, use PNG or WebP at 90 percent so letters stay crisp. For photos you plan to print, keep a higher quality and do not limit the width. If a form states a maximum size such as 200 KB, compress once, check the result, then lower the quality in small steps until the file fits.</p>
-
-  <h2>Frequently Asked Questions (FAQs)</h2>
-  
-  <h3>Is compression really lossless?</h3>
-  <p>Not when you reduce quality. JPG and WebP compression removes some detail to save space. At moderate settings the difference is hard to see, and you can raise the quality if it is not.</p>
-  
-  <h3>Are my photos uploaded?</h3>
-  <p>No. Compression happens locally in your browser, so your photos stay private.</p>
-  
-  <h3>Why did a PNG barely get smaller?</h3>
-  <p>PNG is lossless, so there is little to remove. Switch the output to WebP or JPG, or reduce the maximum width, for much bigger savings.</p>
-  
-  <h3>Is image metadata kept?</h3>
-  <p>No. Re-encoding in the browser drops EXIF data such as camera model and location, which also helps privacy. Orientation is applied to the pixels.</p>
-  
-<h3>How do I reduce the size of a JPG for email or a form?</h3> <p>Add the image, lower the quality setting a little at a time and watch the size shown for each file until it fits the limit, such as 100 KB or 1 MB.</p> <h3>What quality setting should I use?</h3> <p>For photos, around 70 to 85 percent usually cuts the size a lot with little visible loss. Compare the result with the original before you save it.</p> <h2>Related tools</h2> <p>These free tools work well alongside the Image Compressor: <a href="/tools/image-format-converter">Image Format Converter</a>, <a href="/tools/social-media-image-resizer">Social Media Image Resizer</a> and <a href="/tools/pdf-editor">PDF Editor</a>.</p> </article>
+  <h2>Smaller files, same picture</h2>
+  <p>Drop in up to thirty images and each one is re-encoded in your browser with the settings you choose. You see the original size, the new size and the percentage saved for every file, and you can download them separately or as one ZIP. Nothing is uploaded, so it is fine for ID photos, receipts and other things you would rather not send to a stranger&#39;s server.</p>
+  <h2>The three settings that matter</h2>
+  <p><strong>Output format.</strong> WebP gives the smallest files and is the best default for websites. JPG is the most compatible, which matters when you are sending photos by email or into an older system. PNG is lossless, which is useful for screenshots and graphics with flat colour, but it will not shrink photographs much and the quality slider does not apply to it.</p>
+  <p><strong>Quality.</strong> The default is 75. For most photos anything from 70 to 80 looks fine on screen and cuts the size a lot. Below about 50 you start to see blocky patches around edges and in gradients. Try a middle value, zoom in on a face or a sky, and only go lower if it still looks clean.</p>
+  <p><strong>Maximum width.</strong> This is often the bigger saving. A phone photo can be 4,000 pixels wide, while a blog column displays it at 800 to 1,600. Setting a maximum width to match where the picture will appear removes pixels no one will ever see.</p>
+  <h2>What you can expect</h2>
+  <p>Photos from a modern phone typically shrink by well over half when resized and saved at medium quality. Screenshots saved as PNG often shrink most when converted to WebP. If an image is already well compressed and the new version would not be smaller, the tool keeps your original and tells you, instead of handing back a bigger file.</p>
+  <p>Smaller images help web pages load faster, which matters for visitors on mobile data and is one of the things search engines measure. They also help when an upload form has a size limit, such as 200 KB for a job application photo. Because the image is re-drawn during compression, details embedded in the file such as GPS location and camera model are dropped, which is a small privacy bonus.</p>
+  <h2>Questions people ask</h2>
+  <h3>How much can I reduce an image without losing quality?</h3>
+  <p>For photos, quality 70 to 80 plus a sensible maximum width usually cuts the size by half or more while looking the same on a normal screen.</p>
+  <h3>Which format gives the smallest file?</h3>
+  <p>WebP is normally the smallest. Choose JPG if the file has to open on older software.</p>
+  <h3>Why did the tool keep my original file?</h3>
+  <p>If the compressed version would not have been smaller, the original is kept so you never end up with a bigger file.</p>
+  <h3>Can I compress to an exact size such as 100 KB?</h3>
+  <p>There is no target-size box, but lowering the quality or the maximum width step by step gets you there quickly, and the new size is shown instantly.</p>
+  <h3>Are my images uploaded?</h3>
+  <p>No. All the work happens in your browser.</p>
+  <h2>More tools you might need</h2>
+  <p>If the file is still too big or the wrong shape, try <a href="/tools/image-format-converter">Image Format Converter</a>, <a href="/tools/social-media-image-resizer">Social Media Image Resizer</a> and <a href="/tools/pdf-editor">PDF Editor</a>.</p>
+  <p class="content-meta">Last reviewed November 2026. Found a mistake or have an idea to make this better? <a href="/contact">Tell us</a>.</p>
+</article>
     </div>
 
     <aside class="col-lg-3" aria-label="Sidebar">
@@ -222,6 +204,7 @@
         <div class="col-md-4">
           <a class="footer-logo" href="/" aria-label="FreeHandyly home"><img src="/static/img/freehandyly-logo.webp" width="246" height="40" alt="FreeHandyly" loading="lazy" decoding="async"></a>
           <p class="footer-blurb">Instant Free Web Tools &amp; Smart Calculators for Everyone. Tools run in your browser, so what you type stays with you.</p>
+          <address class="footer-contact">Chicago, IL 60602, United States<br><a href="mailto:contact@freehandyly.com">contact@freehandyly.com</a><br><a href="tel:+18477481406">+1 (847) 748-1406</a></address>
         </div>
         <div class="col-12 col-md-5">
           <h2 class="footer-title">Tools</h2>
@@ -235,8 +218,10 @@
             <li><a href="/about">About us</a></li>
             <li><a href="/contact">Contact us</a></li>
             <li><a href="/privacy-policy">Privacy policy</a></li>
-            <li><a href="/privacy-policy#terms">Terms of use</a></li>
-            <li><a href="tel:+18477481406">Call (847) 748-1406</a></li>
+            <li><a href="/terms">Terms of use</a></li>
+            <li><a href="/disclaimer">Disclaimer</a></li>
+            <li><a href="/cookie-policy">Cookie policy</a></li>
+            <li><a href="/site-map">Site map</a></li>
           </ul>
         </div>
       </div>

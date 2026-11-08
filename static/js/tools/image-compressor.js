@@ -48,7 +48,7 @@
       row.appendChild(btn); listEl.appendChild(row);
     });
     sumEl.textContent = totalIn ? 'Total: ' + U.formatBytes(totalIn) + ' \u2192 ' + U.formatBytes(totalOut) + ' (' + Math.round((1 - totalOut / totalIn) * 100) + '% saved)' : '';
-    zipBtn.disabled = !items.some(function (i) { return i.blob; }); clearBtn.disabled = !items.length;
+    zipBtn.disabled = !items.some(function (i) { return i.blob; }) || items.some(function (i) { return !i.blob && !i.failed; }); clearBtn.disabled = !items.length;
   }
 
   function compressAll() {

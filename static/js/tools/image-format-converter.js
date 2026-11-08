@@ -47,7 +47,7 @@
       row.appendChild(btn); listEl.appendChild(row);
     });
     var ready = items.filter(function (i) { return i.blob; }).length;
-    zipBtn.disabled = ready < 1; clearBtn.disabled = !items.length;
+    zipBtn.disabled = ready < 1 || items.some(function (i) { return !i.blob && !i.failed; }); clearBtn.disabled = !items.length;
   }
 
   function convertAll() {

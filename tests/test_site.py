@@ -48,7 +48,7 @@ def test_tool_pages_have_faq_schema_matching_visible_faq(client):
         h = get(client, "/tools/" + t["slug"]).get_data(as_text=True)
         art = h[h.find('<article class="seo-content"'):]
         art = art[:art.find("</article>")]
-        visible = len(re.findall(r"<h3", art[art.find("Frequently Asked"):]))
+        visible = len(re.findall(r"<h3", art[art.find("Questions people ask"):]))
         ld = [json.loads(x) for x in re.findall(r'<script type="application/ld\+json">(.*?)</script>', h, re.S)]
         faq = [n for o in ld for n in o["@graph"] if n["@type"] == "FAQPage"]
         assert faq and len(faq[0]["mainEntity"]) == visible, t["slug"]
@@ -78,7 +78,7 @@ def test_robots_and_sitemap(client):
     r = get(client, "/robots.txt")
     assert "Sitemap: %s/sitemap.xml" % SITE in r.get_data(as_text=True) and "Disallow: /search" in r.get_data(as_text=True)
     x = get(client, "/sitemap.xml").get_data(as_text=True)
-    assert x.count("<loc>") == len(PAGES) == 20
+    assert x.count("<loc>") == len(PAGES) == 24
     assert "<loc>%s/</loc>" % SITE in x and "localhost" not in x
 
 

@@ -9,7 +9,7 @@ from flask import Blueprint, Response, request
 BASE = Path(__file__).resolve().parent
 seo = Blueprint("fh_seo", __name__)
 TOOL_SLUGS = [t["slug"] for t in json.loads((BASE / "data" / "tools.json").read_text(encoding="utf-8"))]
-PAGES = ["/", "/about", "/contact", "/privacy-policy"] + ["/tools/" + s for s in TOOL_SLUGS]
+PAGES = ["/", "/about", "/contact", "/privacy-policy", "/terms", "/disclaimer", "/cookie-policy", "/site-map"] + ["/tools/" + s for s in TOOL_SLUGS]
 
 
 def _site():
