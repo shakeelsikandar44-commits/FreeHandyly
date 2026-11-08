@@ -169,3 +169,38 @@ def test_no_preview_only_scripts_left(client):
     for p in PAGES:
         h = get(client, p).get_data(as_text=True)
         assert "parent.postMessage" not in h, p
+
+
+# ------------------------------------------------------------------ YouTube tag lookup
+import youtube_tags  # noqa: E402
+
+WATCH_PAGE = ('<html><head><meta property="og:title" content="Fallback &amp; title"></head><body><script>var ytInitialPlayerResponse = '
+              '{"videoDetails":{"title":"My Video","keywords":["seo tips","free tools","seo tips"]}};var x=1;</script></body></html>')
+
+
+@pytest.mark.parametrize("value,expected", [
+    ("https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=5s", "dQw4w9WgXcQ"),
+    ("https://youtu.be/dQw4w9WgXcQ?si=abc", "dQw4w9WgXcQ"),
+    ("https://m.youtube.com/shorts/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+    ("youtube.com/embed/dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+    ("dQw4w9WgXcQ", "dQw4w9WgXcQ"),
+    ("https://evil.example/watch?v=dQw4w9WgXcQ", None),
+    ("https://www.youtube.com/", None),
+    ("", None),
+])
+def test_parse_video_id(value, expected):
+    assert youtube_tags.parse_video_id(value) == expected
+
+
+def test_parse_watch_page_reads_title_and_tags():
+    assert youtube_tags.parse_watch_page(WATCH_PAGE) == ("My Video", ["seo tips", "free tools", "seo tips"])
+    title, tags = youtube_tags.parse_watch_page('<meta property="og:title" content="A &amp; B"><meta name="keywords" content="x, y">')
+    assert (title, tags) == ("A & B", ["x", "y"])
+
+
+def test_youtube_api(client, monkeypatch):
+    monkeypatch.setattr(youtube_tags, "_download", lambda vid: WATCH_PAGE)
+    youtube_tags._cache.clear()
+    r = get(client, "/api/youtube-tags?url=https://youtu.be/dQw4w9WgXcQ")
+    assert r.status_code == 200 and r.get_json()["title"] == "My Video" and r.headers["X-Robots-Tag"] == "noindex"
+    assert get(client, "/api/youtube-tags?url=nonsense").status_code == 400
