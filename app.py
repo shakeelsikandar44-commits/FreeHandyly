@@ -19,7 +19,6 @@ from flask import Flask, Response, redirect, request, send_from_directory
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from rates import get_rates
-import youtube_tags
 
 BASE = Path(__file__).resolve().parent
 
@@ -81,10 +80,15 @@ for _path in PAGE_FILES:
 
 
 # ------------------------------------------------------------------ housekeeping
+REMOVED_PAGES = {"/tools/youtube-tag-extractor": "/"}  # retired tools: permanent redirect so old links keep working
+
+
 @app.before_request
 def normalize():
     p = request.path
     if request.method in ("GET", "HEAD"):
+        if p.rstrip("/") in REMOVED_PAGES:
+            return redirect(REMOVED_PAGES[p.rstrip("/")], 301)
         if len(p) > 1 and p.endswith("/"):
             q = "?" + request.query_string.decode() if request.query_string else ""
             return redirect(p.rstrip("/") + q, 301)
@@ -269,30 +273,6 @@ def api_rates():
     return resp
 
 
-YT_HITS = defaultdict(deque)  # ip -> timestamps of recent YouTube lookups (in-memory, per worker)
-
-
-@app.get("/api/youtube-tags")
-def api_youtube_tags():
-    def reply(payload, status=200):
-        resp = Response(json.dumps(payload), status=status, mimetype="application/json")
-        resp.headers["Cache-Control"] = "no-store"
-        resp.headers["X-Robots-Tag"] = "noindex"
-        return resp
-
-    vid = youtube_tags.parse_video_id(request.args.get("url", ""))
-    if not vid:
-        return reply({"error": "That does not look like a YouTube video link. Paste the full link, for example https://www.youtube.com/watch?v=..."}, 400)
-    now, hits = time.time(), YT_HITS[request.remote_addr or "?"]
-    while hits and now - hits[0] > 600:
-        hits.popleft()
-    if len(hits) >= 20:
-        return reply({"error": "Too many lookups from your network. Please wait a few minutes and try again."}, 429)
-    hits.append(now)
-    try:
-        return reply(youtube_tags.lookup(vid))
-    except youtube_tags.LookupError_ as e:
-        return reply({"error": e.message}, e.status)
 
 
 from seo_routes import seo  # noqa: E402  (robots.txt, sitemap.xml, ads.txt)

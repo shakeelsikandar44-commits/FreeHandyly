@@ -11,7 +11,7 @@ def ok(m): OK.append(m)
 def warn(m): WARN.append(m)
 def fail(m): FAIL.append(m)
 
-TOOLS = ["word-counter", "youtube-tag-extractor", "instagram-caption-bio-generator", "social-media-image-resizer",
+TOOLS = ["word-counter", "instagram-caption-bio-generator", "social-media-image-resizer",
          "engagement-rate-calculator", "image-format-converter", "image-compressor", "color-picker", "pdf-editor",
          "percentage-calculator", "freelance-hourly-rate-calculator", "age-calculator", "currency-crypto-converter",
          "calorie-water-calculator", "bmi-calculator", "background-remover", "resume-maker"]

@@ -9,7 +9,6 @@ Live site: https://freehandyly.com (set `SITE_URL` to your own address when you 
 | Tool | What it does |
 |---|---|
 | [Word Counter](/tools/word-counter) | Free online word counter and character counter. Count words, characters, sentences and paragraphs, check reading time and keyword density. No signup. |
-| [YouTube Tag Extractor](/tools/youtube-tag-extractor) | Extract tags and hashtags from any public YouTube video. Copy them as plain tags or ready-to-use hashtags to research your niche. Free, no signup. |
 | [Instagram Caption & Bio Generator](/tools/instagram-caption-bio-generator) | Free Instagram bio and caption generator with fancy fonts and a live character counter. Copy ideas to Instagram, TikTok or X. No signup needed. |
 | [Social Media Image Resizer](/tools/social-media-image-resizer) | Resize images for Instagram, YouTube and other social platforms with exact pixel presets. Fast, free and private: files stay in your browser. |
 | [Engagement Rate Calculator](/tools/engagement-rate-calculator) | Calculate engagement rate and video retention for Instagram, TikTok and YouTube. See the formula behind every result. Free, no signup. |
