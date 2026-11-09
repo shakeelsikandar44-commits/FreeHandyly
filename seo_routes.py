@@ -46,3 +46,12 @@ def ads_txt():
         if p.is_file():
             return Response(p.read_text(encoding="utf-8"), mimetype="text/plain")
     return Response("ads.txt is not set up yet", status=404, mimetype="text/plain")
+
+
+@seo.route("/BingSiteAuth.xml")
+def bing_site_auth():
+    """Bing Webmaster Tools verification file (kept in the project root)."""
+    p = BASE / "BingSiteAuth.xml"
+    if p.is_file():
+        return Response(p.read_text(encoding="utf-8"), mimetype="application/xml")
+    return Response("Not found", status=404, mimetype="text/plain")
