@@ -21,6 +21,8 @@ services:
       - key: CONTACT_TO
         value: contact@freehandyly.com
       # Contact-form e-mail (optional). Render asks for these values when you create the Blueprint.
+      - key: BREVO_API_KEY
+        sync: false
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT

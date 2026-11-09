@@ -9,6 +9,7 @@ import os
 import re
 import smtplib
 import time
+import urllib.request
 from collections import defaultdict, deque
 from email.message import EmailMessage
 from datetime import timedelta
@@ -192,8 +193,24 @@ def deliver(name, email, message):
         ok = True
     except OSError:
         log.exception("could not write contact log")
+    api_key = os.environ.get("BREVO_API_KEY")
+    if api_key:
+        try:
+            payload = json.dumps({
+                "sender": {"name": "FreeHandyly Contact Form", "email": os.environ.get("CONTACT_FROM") or os.environ.get("CONTACT_TO", "contact@freehandyly.com")},
+                "to": [{"email": os.environ.get("CONTACT_TO", "contact@freehandyly.com")}],
+                "replyTo": {"email": email, "name": name},
+                "subject": "FreeHandyly contact form: %s" % name[:60],
+                "textContent": "From: %s <%s>\n\n%s\n" % (name, email, message),
+            }).encode("utf-8")
+            req = urllib.request.Request("https://api.brevo.com/v3/smtp/email", data=payload, method="POST",
+                                         headers={"api-key": api_key, "Content-Type": "application/json", "accept": "application/json"})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                ok = ok or 200 <= resp.status < 300
+        except Exception:  # noqa: BLE001 - never leak API details to visitors
+            log.exception("could not send contact e-mail via Brevo")
     host = os.environ.get("SMTP_HOST")
-    if host:
+    if host and not api_key:
         try:
             msg = EmailMessage()
             msg["Subject"] = "FreeHandyly contact form: %s" % name[:60]

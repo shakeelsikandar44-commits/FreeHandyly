@@ -545,3 +545,6 @@ img, svg { max-width: 100%; }
 .scenario-list li { padding: .9rem 1.1rem; background: #fff; border: 1px solid var(--line); border-radius: 14px; line-height: 1.55; }
 .scenario-list a { font-weight: 700; }
 @media (max-width: 767.98px) { .scenario-list { grid-template-columns: minmax(0, 1fr); } }
+
+.footer-social { display: inline-flex; align-items: center; gap: .4rem; }
+.footer-social svg { flex: none; }
