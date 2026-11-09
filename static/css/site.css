@@ -1,3 +1,9 @@
+@font-face { font-family: 'FH Dancing'; src: url('/static/fonts/signature/dancing-script.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'FH Vibes'; src: url('/static/fonts/signature/great-vibes.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'FH Allura'; src: url('/static/fonts/signature/allura.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'FH Sacramento'; src: url('/static/fonts/signature/sacramento.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'FH Satisfy'; src: url('/static/fonts/signature/satisfy.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'FH Caveat'; src: url('/static/fonts/signature/caveat.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
 /* ==========================================================================
    FreeHandyly design system - colours taken from the logo
    navy #0B2347 | blue #0A63E8 | teal #0DD3C4 | purple #7B3FE4 | green #1FB86B | orange #FF7A3D
@@ -516,6 +522,14 @@ img, svg { max-width: 100%; }
 .pe-sign-save input { margin-top: .2rem; }
 .pe-sign-saved { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-top: .7rem; }
 .pe-sign-link { border: 0; background: transparent; color: var(--blue); text-decoration: underline; font-size: .85rem; padding: 0; cursor: pointer; }
+.pe-sign-ink { margin: 0 0 .7rem; }
+.pe-sign-row[hidden] { display: none; }
+.pe-sign-stl { margin: .8rem 0 .4rem; }
+.pe-sign-styles { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem; }
+.pe-sg-card { border: 1.5px solid #d5dbe8; border-radius: 12px; background: #fff; padding: .35rem .6rem; min-height: 3.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
+.pe-sg-card:hover { border-color: #9fb0d0; }
+.pe-sg-card.on { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(37, 99, 235, .18); }
+.pe-sg-name { font-size: 1.7rem; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; color: var(--sg-ink, #111827); }
 .pe-sign-actions { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1.1rem; }
 @media (max-width: 480px) { .pe-sign-actions .btn { flex: 1; } }
 

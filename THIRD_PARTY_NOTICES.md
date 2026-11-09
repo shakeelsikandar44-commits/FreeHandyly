@@ -11,6 +11,8 @@ This project bundles the following open-source software. Each keeps its own lice
 | [Flask](https://flask.palletsprojects.com/) | 3.1.3 | BSD-3-Clause | Python dependency |
 | [gunicorn](https://gunicorn.org/) | 26.2.0 | MIT | Python dependency |
 
+Signature fonts bundled in `static/fonts/signature/` (SIL Open Font License 1.1, via Fontsource): Dancing Script, Great Vibes, Allura, Sacramento, Satisfy, Caveat.
+
 Fonts loaded from Google Fonts: Bricolage Grotesque and Inter (SIL Open Font License 1.1).
 
 Exchange rates come from the [@fawazahmed0/currency-api](https://github.com/fawazahmed0/exchange-api) dataset; check its terms before heavy commercial use.

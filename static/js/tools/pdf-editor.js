@@ -657,10 +657,14 @@
   var sgDlg = $('pe-sign'), sgPad = $('pe-sign-pad'), sgTyped = $('pe-sign-typed'), sgUp = $('pe-sign-up'), sgMsg = $('pe-sign-msg');
   var sgMode = 'draw', sgStrokes = [], sgLive = null, sgUploaded = null;
   var SG_FONTS = {
-    script: 'italic 400 {s}px "Brush Script MT","Segoe Script","Snell Roundhand","Apple Chancery","URW Chancery L",cursive',
-    casual: 'italic 400 {s}px "Segoe Script","Bradley Hand","Lucida Handwriting","Comic Sans MS",cursive',
-    classic: 'italic 400 {s}px Georgia,"Times New Roman",serif'
+    dancing: '400 {s}px "FH Dancing",cursive',
+    vibes: '400 {s}px "FH Vibes",cursive',
+    allura: '400 {s}px "FH Allura",cursive',
+    sacramento: '400 {s}px "FH Sacramento",cursive',
+    satisfy: '400 {s}px "FH Satisfy",cursive',
+    caveat: '400 {s}px "FH Caveat",cursive'
   };
+  var sgStyle = 'dancing';
   function sgSay(m) { sgMsg.textContent = m || ''; sgMsg.hidden = !m; }
   function sgInk() { return $('pe-sign-color').value; }
   function sgRenderPad() {
@@ -681,10 +685,13 @@
   sgPad.addEventListener('pointermove', function (e) { if (!sgLive) { return; } sgLive.push(sgPoint(e)); sgRenderPad(); });
   ['pointerup', 'pointercancel'].forEach(function (n) { sgPad.addEventListener(n, function () { sgLive = null; }); });
   $('pe-sign-clear').addEventListener('click', function () { sgStrokes = []; sgRenderPad(); });
-  $('pe-sign-color').addEventListener('change', function () { sgRenderPad(); sgRenderTyped(); });
+  $('pe-sign-color').addEventListener('change', function () { sgRenderPad(); sgRenderTyped(); sgPaintCards(); });
 
   function sgRenderTyped() {
-    var txt = $('pe-sign-text').value.trim(), fam = SG_FONTS[$('pe-sign-font').value] || SG_FONTS.script, size = 120;
+    var txt = $('pe-sign-text').value.trim(), fam = SG_FONTS[sgStyle] || SG_FONTS.dancing, size = 120;
+    if (txt && document.fonts && document.fonts.load && !document.fonts.check(fam.replace('{s}', 48), txt)) {
+      document.fonts.load(fam.replace('{s}', 48), txt).then(function () { sgRenderTyped(); }, function () { /* keep fallback */ });
+    }
     var m = document.createElement('canvas').getContext('2d'); m.font = fam.replace('{s}', size);
     var w = Math.max(40, Math.ceil(m.measureText(txt || ' ').width) + 60), h = 200;
     if (w > 1400) { size = Math.floor(size * 1400 / w); w = 1400; m.font = fam.replace('{s}', size); }
@@ -692,8 +699,18 @@
     var x = sgTyped.getContext('2d'); x.clearRect(0, 0, w, h); x.font = fam.replace('{s}', size); x.fillStyle = sgInk(); x.textBaseline = 'middle';
     if (txt) { x.fillText(txt, 30, h / 2 + 4); }
   }
-  $('pe-sign-text').addEventListener('input', function () { sgSay(''); sgRenderTyped(); });
-  $('pe-sign-font').addEventListener('change', sgRenderTyped);
+  /* Style cards: every card shows the typed name in its own handwriting font. */
+  function sgPaintCards() {
+    var t = $('pe-sign-text').value.trim() || 'Your Name', ink = sgInk();
+    Array.prototype.forEach.call(sgDlg.querySelectorAll('.pe-sg-name'), function (n) { n.textContent = t; n.style.setProperty('--sg-ink', ink); });
+  }
+  $('pe-sign-text').addEventListener('input', function () { sgSay(''); sgPaintCards(); sgRenderTyped(); });
+  $('pe-sign-styles').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-sg-style]'); if (!b) { return; }
+    sgStyle = b.getAttribute('data-sg-style');
+    Array.prototype.forEach.call(this.querySelectorAll('[data-sg-style]'), function (k) { var on = k === b; k.classList.toggle('on', on); k.setAttribute('aria-checked', on ? 'true' : 'false'); });
+    sgRenderTyped();
+  });
   $('pe-sign-text').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('pe-sign-insert').click(); } });
 
   /* Uploaded photo: keep the dark ink, fade the paper to transparent. */
@@ -730,7 +747,8 @@
     sgMode = m; sgSay('');
     Array.prototype.forEach.call(sgDlg.querySelectorAll('[data-sg-tab]'), function (b) { var on = b.getAttribute('data-sg-tab') === m; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
     Array.prototype.forEach.call(sgDlg.querySelectorAll('[data-sg-panel]'), function (p) { p.hidden = p.getAttribute('data-sg-panel') !== m; });
-    if (m === 'type') { sgRenderTyped(); $('pe-sign-text').focus(); }
+    $('pe-sign-inkrow').hidden = m === 'upload';
+    if (m === 'type') { sgPaintCards(); sgRenderTyped(); $('pe-sign-text').focus(); }
   }
   sgDlg.addEventListener('click', function (e) { var b = e.target.closest('[data-sg-tab]'); if (b) { sgSetTab(b.getAttribute('data-sg-tab')); } });
 

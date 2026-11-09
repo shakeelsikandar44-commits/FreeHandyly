@@ -225,20 +225,27 @@
           <button type="button" role="tab" class="pe-sign-tab" data-sg-tab="type" aria-selected="false">Type</button>
           <button type="button" role="tab" class="pe-sign-tab" data-sg-tab="upload" aria-selected="false">Upload</button>
         </div>
+        <div class="pe-sign-row pe-sign-ink" id="pe-sign-inkrow">
+          <label class="pe-sign-lbl" for="pe-sign-color">Ink</label>
+          <select id="pe-sign-color" class="form-select form-select-sm pe-sign-sel"><option value="#111827">Black</option><option value="#1d4ed8">Blue</option><option value="#7c2d12">Brown</option></select>
+        </div>
         <div class="pe-sign-panel" data-sg-panel="draw">
           <canvas id="pe-sign-pad" class="pe-sign-pad" width="720" height="240" aria-label="Signature drawing area. Draw with your mouse, finger or stylus."></canvas>
           <div class="pe-sign-row">
-            <label class="pe-sign-lbl" for="pe-sign-color">Ink</label>
-            <select id="pe-sign-color" class="form-select form-select-sm pe-sign-sel"><option value="#111827">Black</option><option value="#1d4ed8">Blue</option><option value="#7c2d12">Brown</option></select>
             <button type="button" class="btn btn-outline-ink btn-sm" id="pe-sign-clear">Clear</button>
           </div>
         </div>
         <div class="pe-sign-panel" data-sg-panel="type" hidden>
           <label class="pe-sign-lbl" for="pe-sign-text">Your name</label>
           <input type="text" id="pe-sign-text" class="form-control" maxlength="40" autocomplete="off" placeholder="Type your name">
-          <div class="pe-sign-row">
-            <label class="pe-sign-lbl" for="pe-sign-font">Style</label>
-            <select id="pe-sign-font" class="form-select form-select-sm pe-sign-sel"><option value="script">Script</option><option value="casual">Casual</option><option value="classic">Classic italic</option></select>
+          <p class="pe-sign-lbl pe-sign-stl" id="pe-sign-stl">Choose a style</p>
+          <div class="pe-sign-styles" id="pe-sign-styles" role="radiogroup" aria-labelledby="pe-sign-stl">
+            <button type="button" role="radio" aria-checked="true" class="pe-sg-card on" data-sg-style="dancing"><span class="pe-sg-name" style="font-family:'FH Dancing',cursive">Your Name</span></button>
+            <button type="button" role="radio" aria-checked="false" class="pe-sg-card" data-sg-style="vibes"><span class="pe-sg-name" style="font-family:'FH Vibes',cursive">Your Name</span></button>
+            <button type="button" role="radio" aria-checked="false" class="pe-sg-card" data-sg-style="allura"><span class="pe-sg-name" style="font-family:'FH Allura',cursive">Your Name</span></button>
+            <button type="button" role="radio" aria-checked="false" class="pe-sg-card" data-sg-style="sacramento"><span class="pe-sg-name" style="font-family:'FH Sacramento',cursive">Your Name</span></button>
+            <button type="button" role="radio" aria-checked="false" class="pe-sg-card" data-sg-style="satisfy"><span class="pe-sg-name" style="font-family:'FH Satisfy',cursive">Your Name</span></button>
+            <button type="button" role="radio" aria-checked="false" class="pe-sg-card" data-sg-style="caveat"><span class="pe-sg-name" style="font-family:'FH Caveat',cursive">Your Name</span></button>
           </div>
           <canvas id="pe-sign-typed" class="pe-sign-prev" width="720" height="200" aria-label="Preview of your typed signature"></canvas>
         </div>
