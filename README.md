@@ -23,6 +23,9 @@ Live site: https://freehandyly.com (set `SITE_URL` to your own address when you 
 | [Calorie & Water Calculator](/tools/calorie-water-calculator) | Estimate daily calories (BMR and TDEE) and how much water to drink using the Mifflin-St Jeor formula. Free calculator, no signup. |
 | [BMI Calculator](/tools/bmi-calculator) | Free BMI calculator in metric or imperial. See your BMI category, WHO or South Asian cut-offs and your healthy weight range. No signup. |
 | [Background Remover](/tools/background-remover) | Remove image backgrounds for free and download a transparent PNG. automatic cutout for people, one click for plain backgrounds. Photos stay on your device. |
+| [Video & Audio Trimmer](/tools/video-trimmer) | Cut a clip out of any video or audio file. Set the start and end, preview it and save. Free, no signup, and the file never leaves your browser. |
+| [Video Resizer](/tools/video-resizer) | Resize a video to 1080p, 720p, 480p or a TikTok, Reels and Shorts shape. Choose bars, crop or stretch. Free and private: nothing is uploaded. |
+| [Video Logo Remover](/tools/video-logo-remover) | Cover or erase a logo, date stamp or caption in your own video. Draw a box over it, choose erase or blur and save. Free, and the file stays on your device. |
 | [Resume Maker](/tools/resume-maker) | Build a professional resume or CV in minutes with templates and accent colors, then save it as PDF. Free, no signup, no watermark. |
 
 ## Tech stack
@@ -70,7 +73,7 @@ app.py                Flask app: pages, search, contact form, /api/rates, securi
 seo_routes.py         robots.txt, sitemap.xml, ads.txt
 rates.py              Exchange-rate proxy with one-hour cache
 predeploy_check.py    Checks files, config and every page before you deploy
-pages/                The 21 pages as ready-to-serve HTML (+ _shell.html for search and 404)
+pages/                The 27 pages as ready-to-serve HTML (+ _shell.html for search and 404)
 data/tools.json       Tool names, SEO descriptions and search keywords
 static/               CSS, JS (static/js/tools/<tool>.js), vendored libraries, images
 tests/                pytest suite (pages, SEO, links, contact form, search, rates)

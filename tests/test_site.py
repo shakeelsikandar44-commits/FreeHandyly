@@ -67,7 +67,7 @@ def test_all_internal_links_and_assets_resolve(client):
 
 
 def test_static_dependencies_exist():
-    for f in ["static/js/vendor/pdf.min.js", "static/js/vendor/pdf.worker.min.js", "static/js/vendor/pdf-lib.min.js",
+    for f in ["static/js/vendor/pdf.min.js", "static/js/vendor/pdf.worker.min.js", "static/js/vendor/pdf-lib.min.js", "static/js/vendor/ffmpeg/ffmpeg.js", "static/js/vendor/ffmpeg/ffmpeg-core.wasm",
               "static/js/vendor/mediapipe/selfie_segmentation.js", "static/js/vendor/mediapipe/selfie_segmentation.binarypb",
               "static/js/vendor/mediapipe/selfie_segmentation.tflite", "static/img/og-image.png", "static/favicon.ico",
               "static/img/freehandyly-logo.webp", "static/css/bootstrap.min.css"]:
@@ -78,7 +78,7 @@ def test_robots_and_sitemap(client):
     r = get(client, "/robots.txt")
     assert "Sitemap: %s/sitemap.xml" % SITE in r.get_data(as_text=True) and "Disallow: /search" in r.get_data(as_text=True)
     x = get(client, "/sitemap.xml").get_data(as_text=True)
-    assert x.count("<loc>") == len(PAGES) == 24
+    assert x.count("<loc>") == len(PAGES) == 27
     assert "<loc>%s/</loc>" % SITE in x and "localhost" not in x
 
 

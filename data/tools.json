@@ -110,5 +110,26 @@
   "title": "Free Resume Maker - Build & Download CV as PDF",
   "description": "Build a professional resume or CV in minutes with templates and accent colors, then save it as PDF. Free, no signup, no watermark.",
   "keywords": "resume cv builder pdf"
+ },
+ {
+  "slug": "video-trimmer",
+  "name": "Video & Audio Trimmer",
+  "title": "Video & Audio Trimmer - Cut MP4 & MP3 Free",
+  "description": "Cut a clip out of any video or audio file. Set the start and end, preview it and save. Free, no signup, and the file never leaves your browser.",
+  "keywords": "trim video cut audio mp4 mp3 clip"
+ },
+ {
+  "slug": "video-resizer",
+  "name": "Video Resizer",
+  "title": "Video Resizer - Change Size for TikTok & YouTube",
+  "description": "Resize a video to 1080p, 720p, 480p or a TikTok, Reels and Shorts shape. Choose bars, crop or stretch. Free and private: nothing is uploaded.",
+  "keywords": "resize video size tiktok reels youtube 1080p 720p"
+ },
+ {
+  "slug": "video-logo-remover",
+  "name": "Video Logo Remover",
+  "title": "Video Logo Remover - Blur or Erase a Watermark",
+  "description": "Cover or erase a logo, date stamp or caption in your own video. Draw a box over it, choose erase or blur and save. Free, and the file stays on your device.",
+  "keywords": "remove logo watermark video blur erase"
  }
 ]
