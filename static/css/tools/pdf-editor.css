@@ -44,3 +44,10 @@
 #pe2-root .pe2-modal.on{display:grid}
 #pe2-root .pe2-modal>div{background:#fff;padding:1rem;border-radius:10px;max-width:96vw}
 #pe2-root #pe2-sc{border:1px solid var(--line);touch-action:none;max-width:100%;cursor:crosshair}
+#pe2-root .pe2-modal>div{min-width:min(560px,96vw)}
+#pe2-root .pe2-tabs{display:flex;margin-bottom:.8rem}
+#pe2-root .pe2-tabs .pb{padding:.35rem 1.2rem}
+#pe2-root .pe2-sgopts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.5rem;max-height:46vh;overflow:auto}
+#pe2-root .pe2-sgopt{border:1px solid var(--line);background:#fff;border-radius:8px;padding:.4rem .7rem;font-size:2rem;line-height:1.3;text-align:center;cursor:pointer;color:var(--ink);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#pe2-root .pe2-sgopt:hover{border-color:var(--acc)}
+#pe2-root .pe2-sgopt.on{border:2px solid var(--acc);background:#f0fdfa}

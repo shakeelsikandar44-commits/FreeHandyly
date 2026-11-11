@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="/static/css/site.css">
   <link rel="stylesheet" href="/static/css/tools/pdf-editor.css">
 
-  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "applicationCategory": "UtilitiesApplication", "browserRequirements": "Requires JavaScript", "description": "Edit PDF online free: add text, whiteout, highlight, draw, shapes, links, form fields, images and your signature. Private, no signup.", "image": "__SITE_URL__/static/img/og-image.png", "inLanguage": "en", "isAccessibleForFree": true, "name": "PDF Editor", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "operatingSystem": "Any", "publisher": {"@type": "Organization", "logo": {"@type": "ImageObject", "url": "__SITE_URL__/static/img/apple-touch-icon.png"}, "name": "FreeHandyly", "url": "__SITE_URL__/"}, "url": "__SITE_URL__/tools/pdf-editor"}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is my PDF uploaded to a server?", "acceptedAnswer": {"@type": "Answer", "text": "No. The file is opened, edited and saved in your browser, and nothing is stored or shared."}}, {"@type": "Question", "name": "How do I change text that is already in my PDF?", "acceptedAnswer": {"@type": "Answer", "text": "Cover it with Whiteout, then add new text on top with the Text tool. Scanned PDFs work the same way, because a scan is only a picture of the page."}}, {"@type": "Question", "name": "How do I sign a PDF here?", "acceptedAnswer": {"@type": "Answer", "text": "Click Sign, draw your signature, click Use signature, then click on the page. Move and resize it, and download the file."}}, {"@type": "Question", "name": "Is a signature added here legally valid?", "acceptedAnswer": {"@type": "Answer", "text": "It is a visual signature, which many everyday documents accept. For contracts that require a certified digital signature, use the service your counterparty specifies."}}, {"@type": "Question", "name": "Can I add or delete pages?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Use Delete page or Insert blank page here above any page."}}]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "__SITE_URL__/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "__SITE_URL__/tools/pdf-editor", "name": "PDF Editor", "position": 2}]}]}</script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "applicationCategory": "UtilitiesApplication", "browserRequirements": "Requires JavaScript", "description": "Edit PDF online free: add text, whiteout, highlight, draw, shapes, links, form fields, images and your signature. Private, no signup.", "image": "__SITE_URL__/static/img/og-image.png", "inLanguage": "en", "isAccessibleForFree": true, "name": "PDF Editor", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "operatingSystem": "Any", "publisher": {"@type": "Organization", "logo": {"@type": "ImageObject", "url": "__SITE_URL__/static/img/apple-touch-icon.png"}, "name": "FreeHandyly", "url": "__SITE_URL__/"}, "url": "__SITE_URL__/tools/pdf-editor"}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is my PDF uploaded to a server?", "acceptedAnswer": {"@type": "Answer", "text": "No. The file is opened, edited and saved in your browser, and nothing is stored or shared."}}, {"@type": "Question", "name": "How do I change text that is already in my PDF?", "acceptedAnswer": {"@type": "Answer", "text": "Cover it with Whiteout, then add new text on top with the Text tool. Scanned PDFs work the same way, because a scan is only a picture of the page."}}, {"@type": "Question", "name": "How do I sign a PDF here?", "acceptedAnswer": {"@type": "Answer", "text": "Click Sign, type your name and choose a style (or use the Draw tab), click Use signature, then click on the page. Move and resize it, and download the file."}}, {"@type": "Question", "name": "Is a signature added here legally valid?", "acceptedAnswer": {"@type": "Answer", "text": "It is a visual signature, which many everyday documents accept. For contracts that require a certified digital signature, use the service your counterparty specifies."}}, {"@type": "Question", "name": "Can I add or delete pages?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Use Delete page or Insert blank page here above any page."}}]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "__SITE_URL__/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "__SITE_URL__/tools/pdf-editor", "name": "PDF Editor", "position": 2}]}]}</script>
   
   
 <meta property="og:locale" content="en_US"><meta property="og:image:alt" content="FreeHandyly - free online tools: PDF editor, calculators, image and text tools"><meta name="author" content="FreeHandyly"><link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"></head>
@@ -182,10 +182,27 @@
   </div>
 
   <div class="pe2-modal" id="pe2-modal"><div>
-    <p class="mb-2"><strong>Draw your signature</strong></p>
-    <canvas id="pe2-sc" width="520" height="200" aria-label="Signature drawing area"></canvas>
-    <p class="mt-2 mb-0 d-flex gap-2 justify-content-end">
-      <button type="button" class="btn btn-outline-ink btn-sm" id="pe2-sclear">Clear</button>
+    <p class="mb-2"><strong>Create your signature</strong></p>
+    <div class="pe2-tabs" role="tablist">
+      <button type="button" class="pb on" data-sg="type" role="tab">Type</button>
+      <button type="button" class="pb" data-sg="draw" role="tab">Draw</button>
+    </div>
+    <div id="pe2-sg-type">
+      <input type="text" id="pe2-sg-name" class="form-control mb-2" maxlength="40" placeholder="Type your name" autocomplete="off" aria-label="Type your name">
+      <div class="pe2-sgopts" id="pe2-sgopts" role="radiogroup" aria-label="Signature style">
+        <button type="button" class="pe2-sgopt on" data-f="FH Dancing" role="radio" aria-checked="true">Your Name</button>
+        <button type="button" class="pe2-sgopt" data-f="FH Vibes" role="radio" aria-checked="false">Your Name</button>
+        <button type="button" class="pe2-sgopt" data-f="FH Allura" role="radio" aria-checked="false">Your Name</button>
+        <button type="button" class="pe2-sgopt" data-f="FH Sacramento" role="radio" aria-checked="false">Your Name</button>
+        <button type="button" class="pe2-sgopt" data-f="FH Satisfy" role="radio" aria-checked="false">Your Name</button>
+        <button type="button" class="pe2-sgopt" data-f="FH Caveat" role="radio" aria-checked="false">Your Name</button>
+      </div>
+    </div>
+    <div id="pe2-sg-draw" hidden>
+      <canvas id="pe2-sc" width="520" height="200" aria-label="Signature drawing area"></canvas>
+    </div>
+    <p class="mt-3 mb-0 d-flex gap-2 justify-content-end">
+      <button type="button" class="btn btn-outline-ink btn-sm" id="pe2-sclear" hidden>Clear</button>
       <button type="button" class="btn btn-outline-ink btn-sm" id="pe2-scancel">Cancel</button>
       <button type="button" class="btn btn-ink btn-sm" id="pe2-suse">Use signature</button></p>
   </div></div>
@@ -202,7 +219,7 @@
   <h2>Changing text that is already in the PDF</h2>
   <p>Use Whiteout to drag a white box over the old words, then click Text and type the new ones in the same spot. New text is saved in Helvetica, so it may look slightly different from the original font. Letters outside the Latin alphabet, such as Urdu, Arabic, Chinese and Hindi, cannot be typed in this version. For those, whiteout the area and add a picture of the text with Images.</p>
   <h2>Signing a document</h2>
-  <p>Click Sign and draw your signature with a mouse or finger, then click on the page to place it. Drag it into position and use the small square at the corner to resize. It is a picture of your signature, which most forms and emailed agreements accept, but it is not a certificate-based digital signature.</p>
+  <p>Click Sign, then either type your name and pick one of six handwriting styles, or switch to Draw and sign with a mouse or finger. Click Use signature, then click on the page to place it. Drag it into position and use the small square at the corner to resize. It is a picture of your signature, which most forms and emailed agreements accept, but it is not a certificate-based digital signature.</p>
   <h2>Links, form fields and shapes</h2>
   <p>Links turns a dragged box into a clickable web link in the downloaded PDF. Forms adds a checkmark or a fillable text field. Highlight and Freehand draw are under Annotate, and Rectangle, Ellipse, Line and Arrow are under Shapes. Hover over anything you placed to move it, resize it or delete it with the red cross. Undo steps back one change at a time. You can also delete a page or insert a blank one from the bar above each page.</p>
   <h2>Before you send the file</h2>
@@ -213,7 +230,7 @@
   <h3>How do I change text that is already in my PDF?</h3>
   <p>Cover it with Whiteout, then add new text on top with the Text tool. Scanned PDFs work the same way, because a scan is only a picture of the page.</p>
   <h3>How do I sign a PDF here?</h3>
-  <p>Click Sign, draw your signature, click Use signature, then click on the page. Move and resize it, and download the file.</p>
+  <p>Click Sign, type your name and choose a style (or use the Draw tab), click Use signature, then click on the page. Move and resize it, and download the file.</p>
   <h3>Is a signature added here legally valid?</h3>
   <p>It is a visual signature, which many everyday documents accept. For contracts that require a certified digital signature, use the service your counterparty specifies.</p>
   <h3>Can I add or delete pages?</h3>

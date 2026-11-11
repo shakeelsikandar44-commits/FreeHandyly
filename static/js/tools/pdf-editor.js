@@ -205,16 +205,55 @@
   sc.onpointerdown = function (e) { drawing = true; sc.setPointerCapture(e.pointerId); var p = sp(e); sx.beginPath(); sx.moveTo(p[0], p[1]); };
   sc.onpointermove = function (e) { if (!drawing) { return; } var p = sp(e); sx.lineTo(p[0], p[1]); sx.stroke(); };
   sc.onpointerup = function () { drawing = false; };
-  $('#pe2-signbtn').onclick = function () { sx.strokeStyle = $('#pe2-color').value; sx.clearRect(0, 0, sc.width, sc.height); $('#pe2-modal').classList.add('on'); };
+  var sgMode = 'type', sgFont = 'FH Dancing';
+  var sgOpts = root.querySelectorAll('.pe2-sgopt'), sgName = $('#pe2-sg-name');
+  function sgFontStr(f, px) { return px + 'px "' + f + '", cursive'; }
+  function sgPreview() {
+    var txt = sgName.value.trim() || 'Your Name', col = $('#pe2-color').value;
+    sgOpts.forEach(function (b) {
+      b.textContent = txt; b.style.fontFamily = '"' + b.dataset.f + '", cursive'; b.style.color = col;
+      if (document.fonts && document.fonts.load) { document.fonts.load(sgFontStr(b.dataset.f, 32), txt).then(function () { b.style.fontFamily = '"' + b.dataset.f + '", cursive'; }); }
+    });
+  }
+  function sgSetMode(m) {
+    sgMode = m;
+    root.querySelectorAll('[data-sg]').forEach(function (b) { b.classList.toggle('on', b.dataset.sg === m); });
+    $('#pe2-sg-type').hidden = m !== 'type'; $('#pe2-sg-draw').hidden = m !== 'draw'; $('#pe2-sclear').hidden = m !== 'draw';
+  }
+  root.querySelectorAll('[data-sg]').forEach(function (b) { b.onclick = function () { sgSetMode(b.dataset.sg); }; });
+  sgOpts.forEach(function (b) {
+    b.onclick = function () {
+      sgFont = b.dataset.f;
+      sgOpts.forEach(function (o) { var on = o === b; o.classList.toggle('on', on); o.setAttribute('aria-checked', on ? 'true' : 'false'); });
+    };
+  });
+  sgName.oninput = sgPreview;
+  $('#pe2-signbtn').onclick = function () {
+    sx.strokeStyle = $('#pe2-color').value; sx.clearRect(0, 0, sc.width, sc.height);
+    sgPreview(); $('#pe2-modal').classList.add('on'); sgName.focus();
+  };
   $('#pe2-sclear').onclick = function () { sx.clearRect(0, 0, sc.width, sc.height); };
   $('#pe2-scancel').onclick = function () { $('#pe2-modal').classList.remove('on'); };
-  $('#pe2-suse').onclick = function () {
-    var d = sx.getImageData(0, 0, sc.width, sc.height).data, x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
-    for (var y = 0; y < sc.height; y++) { for (var x = 0; x < sc.width; x++) { if (d[(y * sc.width + x) * 4 + 3] > 10) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } } }
-    if (x1 < 0) { return; }
+  function sgFinish(cv) {
+    var d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data, x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
+    for (var y = 0; y < cv.height; y++) { for (var x = 0; x < cv.width; x++) { if (d[(y * cv.width + x) * 4 + 3] > 10) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } } }
+    if (x1 < 0) { return false; }
     var w = x1 - x0 + 8, h = y1 - y0 + 8, c = document.createElement('canvas'); c.width = w; c.height = h;
-    c.getContext('2d').drawImage(sc, x0 - 4, y0 - 4, w, h, 0, 0, w, h);
+    c.getContext('2d').drawImage(cv, x0 - 4, y0 - 4, w, h, 0, 0, w, h);
     pending = { src: c.toDataURL('image/png'), r: h / w }; $('#pe2-modal').classList.remove('on'); setTool('place');
+    return true;
+  }
+  $('#pe2-suse').onclick = function () {
+    if (sgMode === 'draw') { sgFinish(sc); return; }
+    var txt = sgName.value.trim(); if (!txt) { sgName.focus(); return; }
+    var fs = sgFontStr(sgFont, 120);
+    var go = function () {
+      var cv = document.createElement('canvas'); cv.width = 1400; cv.height = 300;
+      var cx = cv.getContext('2d'); cx.font = fs; cx.fillStyle = $('#pe2-color').value; cx.textBaseline = 'middle'; cx.textAlign = 'left';
+      var w = cx.measureText(txt).width; if (w > 1360) { cv.width = Math.ceil(w) + 40; cx = cv.getContext('2d'); cx.font = fs; cx.fillStyle = $('#pe2-color').value; cx.textBaseline = 'middle'; }
+      cx.fillText(txt, 20, 150); sgFinish(cv);
+    };
+    if (document.fonts && document.fonts.load) { document.fonts.load(fs, txt).then(go, go); } else { go(); }
   };
 
   /* ---------- export ---------- */
