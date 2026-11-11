@@ -143,12 +143,14 @@
   function bindOverlay(i, ov) {
     ov.addEventListener('pointerdown', function (e) {
       if (e.target !== ov || tool === 'select') { return; }
+      e.preventDefault(); /* keep focus/selection on the element we are about to create */
       var r = ov.getBoundingClientRect(), px = (e.clientX - r.left) / S, py = (e.clientY - r.top) / S, objs = pages[i].objs;
       var color = $('#pe2-color').value, sw = +$('#pe2-sw').value || 2;
       var add = function (o) { objs.push(o); draw(i); return o; };
       if (tool === 'text') {
         push(); add({ t: 'text', x: px, y: py, text: 'Text', size: +$('#pe2-size').value || 14, c: color });
-        var ts = sheets[i].querySelectorAll('.po.text .t'), t = ts[ts.length - 1]; t.focus(); getSelection().selectAllChildren(t); return;
+        var ts = sheets[i].querySelectorAll('.po.text .t'), t = ts[ts.length - 1];
+        var focusIt = function () { t.focus(); getSelection().selectAllChildren(t); }; focusIt(); setTimeout(focusIt, 0); return;
       }
       if (tool === 'check') { push(); add({ t: 'check', x: px - 9, y: py - 9, w: 18, h: 18, c: color }); setTool('select'); return; }
       if (tool === 'field') { push(); add({ t: 'field', x: px, y: py - 11, w: 150, h: 22 }); setTool('select'); return; }
