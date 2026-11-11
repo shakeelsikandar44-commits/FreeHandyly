@@ -117,7 +117,7 @@
       for (var i = 1; i < a.pts.length; i++) { if (distSeg(x, y, a.pts[i - 1][0], a.pts[i - 1][1], a.pts[i][0], a.pts[i][1]) <= a.width / 2 + tol) { return true; } }
       return a.pts.length === 1 && Math.hypot(x - a.pts[0][0], y - a.pts[0][1]) <= a.width / 2 + tol;
     }
-    if (a.t === 'line') { return distSeg(x, y, a.x1, a.y1, a.x2, a.y2) <= a.width / 2 + tol; }
+    if (a.t === 'line' || a.t === 'arrow') { return distSeg(x, y, a.x1, a.y1, a.x2, a.y2) <= a.width / 2 + tol; }
     var b = bbox(a);
     return x >= b.x1 - tol && x <= b.x2 + tol && y >= b.y1 - tol && y <= b.y2 + tol;
   }
@@ -142,6 +142,27 @@
   function anchored(ctx, p, x, y, fn) {
     var o = toView(p, x, y);
     ctx.save(); ctx.translate(o[0], o[1]); ctx.rotate(p.rot * Math.PI / 180); ctx.scale(zoom, zoom); fn(); ctx.restore();
+  }
+  var NEWT = { ul: 1, st: 1, arrow: 1, mark: 1, link: 1, field: 1 };
+  function shapes(a) {
+    var x1 = Math.min(a.x1, a.x2), x2 = Math.max(a.x1, a.x2), y1 = Math.min(a.y1, a.y2), y2 = Math.max(a.y1, a.y2), w = x2 - x1, hh = y2 - y1, o = [];
+    switch (a.t) {
+      case 'ul': o.push({ pts: [[x1, y2], [x2, y2]] }); break;
+      case 'st': o.push({ pts: [[x1, (y1 + y2) / 2], [x2, (y1 + y2) / 2]] }); break;
+      case 'arrow':
+        var ang = Math.atan2(a.y2 - a.y1, a.x2 - a.x1), L = 8 + a.width * 2.5;
+        o.push({ pts: [[a.x1, a.y1], [a.x2, a.y2]] });
+        o.push({ pts: [[a.x2 - L * Math.cos(ang - 0.45), a.y2 - L * Math.sin(ang - 0.45)], [a.x2, a.y2], [a.x2 - L * Math.cos(ang + 0.45), a.y2 - L * Math.sin(ang + 0.45)]] });
+        break;
+      case 'mark':
+        if (a.k === 'check') { o.push({ pts: [[x1 + w * .12, y1 + hh * .55], [x1 + w * .4, y1 + hh * .85], [x1 + w * .9, y1 + hh * .15]] }); }
+        else if (a.k === 'cross') { o.push({ pts: [[x1 + w * .15, y1 + hh * .15], [x1 + w * .85, y1 + hh * .85]] }); o.push({ pts: [[x1 + w * .85, y1 + hh * .15], [x1 + w * .15, y1 + hh * .85]] }); }
+        else { o.push({ pts: ellipsePts({ x1: x1 + w * .15, x2: x2 - w * .15, y1: y1 + hh * .15, y2: y2 - hh * .15 }), close: true, fill: true }); }
+        break;
+      case 'link': o.push({ pts: rectPts({ x1: x1, x2: x2, y1: y1, y2: y2 }), close: true, stroke: '#1d4ed8', w: 1 }); break;
+      case 'field': o.push({ pts: rectPts({ x1: x1, x2: x2, y1: y1, y2: y2 }), close: true, stroke: '#2563eb', w: 1, bg: '#eaf2ff' }); break;
+    }
+    return o;
   }
   function drawAnnot(ctx, p, a) {
     ctx.save();
@@ -172,6 +193,16 @@
         break;
       case 'white':
         polyPath(ctx, p, rectPts(a)); ctx.closePath(); ctx.fillStyle = a.bg || '#ffffff'; ctx.fill();
+        break;
+      case 'ul': case 'st': case 'arrow': case 'mark': case 'link': case 'field':
+        shapes(a).forEach(function (s) {
+          polyPath(ctx, p, s.pts); if (s.close) { ctx.closePath(); }
+          if (s.bg) { ctx.fillStyle = s.bg; ctx.fill(); }
+          if (s.fill) { ctx.fillStyle = a.color; ctx.fill(); }
+          ctx.strokeStyle = s.stroke || a.color; ctx.lineWidth = (s.w || a.width) * zoom; ctx.stroke();
+        });
+        if (a.t === 'field') { ctx.fillStyle = '#2563eb'; ctx.font = (11 * zoom) + 'px Inter, sans-serif'; var fv = toView(p, Math.min(a.x1, a.x2) + 4, Math.min(a.y1, a.y2) + 14); ctx.fillText(a.k === 'checkbox' ? '\u2610 checkbox' : 'text field', fv[0], fv[1]); }
+        if (a.t === 'link') { ctx.fillStyle = 'rgba(29,78,216,.08)'; ctx.fill(); }
         break;
       case 'img':
         var im = images[a.img];
@@ -514,10 +545,12 @@
     overlay.setPointerCapture(e.pointerId);
     var base = { id: 0, t: tool, color: props.color, width: props.width };
     if (tool === 'ink') { draft = { id: 0, t: 'ink', color: props.color, width: props.width, pts: [[x, y]] }; }
-    else if (tool === 'line') { draft = { id: 0, t: 'line', color: props.color, width: props.width, x1: x, y1: y, x2: x, y2: y }; }
+    else if (tool === 'line' || tool === 'arrow') { draft = { id: 0, t: tool, color: props.color, width: props.width, x1: x, y1: y, x2: x, y2: y }; }
     else {
       draft = { id: 0, t: tool, color: tool === 'hl' ? props.color : props.color, width: props.width, fill: tool === 'rect' || tool === 'ellipse' ? props.fill : false, x1: x, y1: y, x2: x, y2: y };
     }
+    if (tool === 'check' || tool === 'cross' || tool === 'dot') { draft.t = 'mark'; draft.k = tool; draft.fill = false; }
+    if (tool === 'cbox' || tool === 'field') { draft.t = 'field'; draft.k = tool === 'cbox' ? 'checkbox' : 'text'; }
     void base; drawOverlay();
   });
   overlay.addEventListener('pointermove', function (e) {
@@ -542,8 +575,13 @@
     var d = draft; draft = null;
     var ok = true;
     if (d.t === 'ink') { ok = d.pts.length >= 1; }
-    else if (d.t === 'line') { ok = Math.hypot(d.x2 - d.x1, d.y2 - d.y1) > 3; }
+    else if (d.t === 'line' || d.t === 'arrow') { ok = Math.hypot(d.x2 - d.x1, d.y2 - d.y1) > 3; }
+    else if ((d.t === 'mark' || d.t === 'field') && Math.abs(d.x2 - d.x1) < 6 && Math.abs(d.y2 - d.y1) < 6) {
+      var fw = d.t === 'mark' ? 18 : (d.k === 'checkbox' ? 16 : 150), fh = d.t === 'mark' ? 18 : (d.k === 'checkbox' ? 16 : 22);
+      d.x2 = d.x1 + fw; d.y2 = d.y1 + fh;
+    }
     else { ok = Math.abs(d.x2 - d.x1) > 3 && Math.abs(d.y2 - d.y1) > 3; if (ok) { var nx1 = Math.min(d.x1, d.x2), nx2 = Math.max(d.x1, d.x2), ny1 = Math.min(d.y1, d.y2), ny2 = Math.max(d.y1, d.y2); d.x1 = nx1; d.x2 = nx2; d.y1 = ny1; d.y2 = ny2; } }
+    if (ok && d.t === 'link') { var u = window.prompt('Link address (URL) for this area:', 'https://'); if (!u || u === 'https://') { ok = false; } else { d.url = /^[a-z][a-z0-9+.-]*:/i.test(u) ? u : 'https://' + u; d.color = '#1d4ed8'; } }
     if (ok) { d.id = uid(); pages[cur].annots.push(d); commit(); }
     drawOverlay(); void e;
   }
@@ -907,6 +945,26 @@
                       return null;
                     case 'white':
                       page.drawSvgPath(svgPath(rectPts(a), true), Object.assign({ color: a.bg ? hexRgb(a.bg) : PL.rgb(1, 1, 1), borderWidth: 0 }, origin));
+                      return null;
+                    case 'ul': case 'st': case 'arrow': case 'mark': case 'link': case 'field':
+                      shapes(a).forEach(function (s) {
+                        if (a.t === 'field' || a.t === 'link') { return; }
+                        var o2 = { borderColor: hexRgb(s.stroke || a.color), borderWidth: s.w || a.width, borderLineCap: PL.LineCapStyle.Round };
+                        if (s.fill) { o2.color = hexRgb(a.color); }
+                        page.drawSvgPath(svgPath(s.pts, s.close), Object.assign(o2, origin));
+                      });
+                      if (a.t === 'link' || a.t === 'field') {
+                        var c1 = toPdf(Math.min(a.x1, a.x2), Math.min(a.y1, a.y2)), c2 = toPdf(Math.max(a.x1, a.x2), Math.max(a.y1, a.y2));
+                        var rx = Math.min(c1[0], c2[0]), ry = Math.min(c1[1], c2[1]), rw = Math.abs(c2[0] - c1[0]), rh = Math.abs(c2[1] - c1[1]);
+                        if (a.t === 'link') {
+                          var lk = out.context.obj({ Type: 'Annot', Subtype: 'Link', Rect: [rx, ry, rx + rw, ry + rh], Border: [0, 0, 0], A: { Type: 'Action', S: 'URI', URI: PL.PDFString.of(a.url) } });
+                          page.node.addAnnot(out.context.register(lk));
+                        } else {
+                          var fo = { x: rx, y: ry, width: rw, height: rh, borderWidth: 1, borderColor: PL.rgb(0.15, 0.39, 0.92), backgroundColor: PL.rgb(0.92, 0.95, 1) };
+                          if (a.k === 'checkbox') { out.getForm().createCheckBox('cb_' + a.id).addToPage(page, fo); }
+                          else { out.getForm().createTextField('tf_' + a.id).addToPage(page, fo); }
+                        }
+                      }
                       return null;
                     case 'img':
                       return getImage(a.img).then(function (img) {
