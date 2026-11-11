@@ -1,0 +1,46 @@
+/* FreeHandyly - PDF Editor (Sejda-style layout) */
+#pe2-root{--acc:#0f766e;--line:#cfd8dc;--mute:#6b7280;--ink:#1f2a37}
+#pe2-root .pe2-drop{display:flex;flex-direction:column;align-items:center;gap:.4rem;border:2px dashed var(--line);border-radius:12px;padding:3rem 1rem;text-align:center;background:#fafbfc;cursor:pointer}
+#pe2-root .pe2-drop strong{display:inline-block;background:var(--acc);color:#fff;padding:.8rem 1.8rem;border-radius:6px;font-size:1.15rem}
+#pe2-root .pe2-drop span{color:var(--mute)}
+#pe2-root .pe2-drop.hot{border-color:var(--acc);background:#f0fdfa}
+#pe2-root .pe2-area{background:#eceff1;border-radius:10px;padding:.6rem .5rem 2rem;margin-top:1rem}
+#pe2-root .pe2-tb{display:flex;flex-wrap:wrap;justify-content:center;position:sticky;top:0;z-index:5;padding:.4rem 0;background:#eceff1}
+#pe2-root .pb{font:inherit;font-size:.9rem;cursor:pointer;border:1px solid var(--acc);background:#fff;color:var(--acc);padding:.4rem .75rem;border-radius:0;margin-left:-1px;display:inline-flex;align-items:center;gap:.35rem;white-space:nowrap}
+#pe2-root .pb:hover,#pe2-root .pb.on{background:var(--acc);color:#fff}
+#pe2-root .pb.go{background:var(--acc);color:#fff;font-weight:600;margin-left:.6rem;border-radius:4px}
+#pe2-root .pb:disabled{opacity:.6;cursor:wait}
+#pe2-root .pdd{position:relative;display:inline-block}
+#pe2-root .pmenu{display:none;position:absolute;top:100%;left:0;background:#fff;border:1px solid var(--acc);z-index:8;min-width:150px}
+#pe2-root .pdd:hover .pmenu,#pe2-root .pdd:focus-within .pmenu{display:block}
+#pe2-root .pmenu .pb{display:flex;width:100%;border:0;margin:0}
+#pe2-root .pe2-opts{display:flex;gap:1rem;justify-content:center;align-items:center;flex-wrap:wrap;font-size:.85rem;color:var(--mute);margin:.3rem 0 .8rem}
+#pe2-root .pe2-opts input[type=number]{width:60px}
+#pe2-root .ppg{margin:0 auto 1.2rem;width:max-content;max-width:100%}
+#pe2-root .ppbar{display:flex;gap:.4rem;align-items:center;justify-content:center;margin-bottom:.4rem;color:var(--acc);font-size:1.2rem}
+#pe2-root .ppbar .pb{font-size:.78rem;padding:.2rem .6rem;border-radius:4px;margin:0}
+#pe2-root .pwrap{overflow:auto;max-width:100%}
+#pe2-root .psheet{position:relative;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.25);margin:0 auto}
+#pe2-root .psheet canvas,#pe2-root .psheet svg,#pe2-root .pov{position:absolute;left:0;top:0;width:100%;height:100%}
+#pe2-root .psheet svg{pointer-events:none}
+#pe2-root[data-tool=whiteout] .pov,#pe2-root[data-tool=highlight] .pov,#pe2-root[data-tool=rect] .pov,#pe2-root[data-tool=ellipse] .pov,#pe2-root[data-tool=link] .pov,#pe2-root[data-tool=draw] .pov,#pe2-root[data-tool=line] .pov,#pe2-root[data-tool=arrow] .pov{touch-action:none}
+#pe2-root:not([data-tool=select]):not([data-tool=text]) .po{pointer-events:none}
+#pe2-root[data-tool=text] .po:not(.text){pointer-events:none}
+#pe2-root:not([data-tool=select]) .pov{cursor:crosshair}
+#pe2-root .po{position:absolute}
+#pe2-root .po:hover,#pe2-root .po:focus-within{outline:1px dashed var(--acc)}
+#pe2-root .po .x{display:none;position:absolute;right:-9px;top:-9px;width:18px;height:18px;border-radius:50%;background:#dc2626;color:#fff;text-align:center;font:13px/18px sans-serif;cursor:pointer;z-index:2}
+#pe2-root .po:hover .x{display:block}
+#pe2-root .po .rz{position:absolute;right:-5px;bottom:-5px;width:10px;height:10px;background:var(--acc);cursor:nwse-resize;display:none}
+#pe2-root .po:hover .rz{display:block}
+#pe2-root .po .grip{display:none;position:absolute;left:-14px;top:-2px;width:14px;height:14px;background:var(--acc);cursor:move;border-radius:2px}
+#pe2-root .po.text:hover .grip{display:block}
+#pe2-root .po.text .t{outline:0;white-space:pre;min-width:20px;cursor:text}
+#pe2-root .po.link{background:rgba(26,115,232,.12);border:1px dashed #1a73e8}
+#pe2-root .po.field{background:rgba(26,115,232,.1);border:1px solid #1a73e8}
+#pe2-root .po.check{text-align:center;line-height:1;font-family:sans-serif}
+#pe2-root .po img{width:100%;height:100%;display:block;pointer-events:none}
+#pe2-root .pe2-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;place-items:center;z-index:1050}
+#pe2-root .pe2-modal.on{display:grid}
+#pe2-root .pe2-modal>div{background:#fff;padding:1rem;border-radius:10px;max-width:96vw}
+#pe2-root #pe2-sc{border:1px solid var(--line);touch-action:none;max-width:100%;cursor:crosshair}
