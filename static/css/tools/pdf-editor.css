@@ -1,3 +1,9 @@
+@font-face{font-family:'FH Parisienne';src:url('/static/fonts/signature/parisienne.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Alex';src:url('/static/fonts/signature/alex-brush.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Yellowtail';src:url('/static/fonts/signature/yellowtail.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Homemade';src:url('/static/fonts/signature/homemade-apple.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Dafoe';src:url('/static/fonts/signature/mr-dafoe.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Marck';src:url('/static/fonts/signature/marck-script.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
 /* FreeHandyly - PDF Editor (Sejda-style layout) */
 #pe2-root{--acc:#0f766e;--line:#cfd8dc;--mute:#6b7280;--ink:#1f2a37}
 #pe2-root .pe2-drop{display:flex;flex-direction:column;align-items:center;gap:.4rem;border:2px dashed var(--line);border-radius:12px;padding:3rem 1rem;text-align:center;background:#fafbfc;cursor:pointer}
@@ -44,10 +50,19 @@
 #pe2-root .pe2-modal.on{display:grid}
 #pe2-root .pe2-modal>div{background:#fff;padding:1rem;border-radius:10px;max-width:96vw}
 #pe2-root #pe2-sc{border:1px solid var(--line);touch-action:none;max-width:100%;cursor:crosshair}
-#pe2-root .pe2-modal>div{min-width:min(560px,96vw)}
+#pe2-root .pe2-modal>div{width:min(600px,96vw);position:relative}
+#pe2-root .pe2-mx{position:absolute;right:.6rem;top:.4rem;border:0;background:none;font-size:1.6rem;line-height:1;cursor:pointer;color:var(--mute)}
 #pe2-root .pe2-tabs{display:flex;margin-bottom:.8rem}
 #pe2-root .pe2-tabs .pb{padding:.35rem 1.2rem}
-#pe2-root .pe2-sgopts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.5rem;max-height:46vh;overflow:auto}
-#pe2-root .pe2-sgopt{border:1px solid var(--line);background:#fff;border-radius:8px;padding:.4rem .7rem;font-size:2rem;line-height:1.3;text-align:center;cursor:pointer;color:var(--ink);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-#pe2-root .pe2-sgopt:hover{border-color:var(--acc)}
-#pe2-root .pe2-sgopt.on{border:2px solid var(--acc);background:#f0fdfa}
+#pe2-root .pe2-sgopts{display:flex;flex-direction:column;gap:.35rem;max-height:40vh;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:.35rem}
+#pe2-root .pe2-sgopt{border:2px solid transparent;background:#fff;border-radius:8px;padding:.3rem .8rem;font-size:1.9rem;line-height:2.1;min-height:4rem;flex:0 0 auto;text-align:left;cursor:pointer;color:#111827;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#pe2-root .pe2-sgopt:hover{background:#f3f4f6}
+#pe2-root .pe2-sgopt.on{border-color:var(--acc);background:#f0fdfa}
+#pe2-root .pe2-sgcol{display:flex;gap:.5rem;align-items:center;margin-top:.7rem;font-size:.85rem;color:var(--mute)}
+#pe2-root .pe2-sgcol button{width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+#pe2-root .pe2-sgcol button.on{box-shadow:0 0 0 2px var(--acc)}
+#pe2-root .pe2-upprev{max-width:100%;max-height:200px;border:1px dashed var(--line);margin-top:.6rem;background:repeating-conic-gradient(#f3f4f6 0 25%,#fff 0 50%) 0 0/16px 16px}
+#pe2-root .pe2-saved{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.2rem .5rem;border-top:1px solid #eee;background:#fff;min-width:200px}
+#pe2-root .pe2-saved button.pick{border:0;background:none;cursor:pointer;padding:.2rem}
+#pe2-root .pe2-saved img{max-height:30px;max-width:150px;display:block}
+#pe2-root .pe2-saved .del{border:0;background:none;color:#dc2626;font-size:1.2rem;cursor:pointer}

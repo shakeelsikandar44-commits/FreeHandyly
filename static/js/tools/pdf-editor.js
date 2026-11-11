@@ -14,7 +14,7 @@
   var HINTS = { select: 'Hover an item to move, resize or delete it.', text: 'Click on the page to add text.', link: 'Drag a box, then enter the link URL.',
     check: 'Click to place a checkmark.', field: 'Click to place a fillable text field.', whiteout: 'Drag to cover content with white.',
     highlight: 'Drag over text to highlight.', draw: 'Draw freehand.', rect: 'Drag to draw a rectangle.', ellipse: 'Drag to draw an ellipse.',
-    line: 'Drag to draw a line.', arrow: 'Drag to draw an arrow.', place: 'Click on the page to place it.' };
+    line: 'Drag to draw a line.', arrow: 'Drag to draw an arrow.', place: 'Click on the page where you want to place it. Press Esc to cancel.' };
 
   function push() { hist.push(JSON.stringify(pages)); if (hist.length > 40) { hist.shift(); } }
   function undo() { if (hist.length) { pages = JSON.parse(hist.pop()); renderPages(); } }
@@ -198,60 +198,121 @@
     };
     im.src = u; e.target.value = '';
   };
-  /* signature */
-  var sc = $('#pe2-sc'), sx = sc.getContext('2d'), drawing = false;
+  /* signature (Type / Draw / Upload Image, optional saved signatures) */
+  var SIGF = [['FH Dancing', 'Dancing Script'], ['FH Vibes', 'Great Vibes'], ['FH Allura', 'Allura'], ['FH Sacramento', 'Sacramento'], ['FH Satisfy', 'Satisfy'],
+    ['FH Caveat', 'Caveat'], ['FH Parisienne', 'Parisienne'], ['FH Alex', 'Alex Brush'], ['FH Yellowtail', 'Yellowtail'], ['FH Homemade', 'Homemade Apple'],
+    ['FH Dafoe', 'Mr Dafoe'], ['FH Marck', 'Marck Script']];
+  var sc = $('#pe2-sc'), sx = sc.getContext('2d'), drawing = false, sgMode = 'type', sgFont = SIGF[0][0], sgColor = '#111827', sgUp = null, sgVer = 'orig';
+  var sgName = $('#pe2-sg-name'), optBox = $('#pe2-sgopts'), upPrev = $('#pe2-sg-upprev'), KEY = 'fh-pe-sigs';
   sx.lineWidth = 2.5; sx.lineCap = 'round'; sx.lineJoin = 'round';
-  function sp(e) { var r = sc.getBoundingClientRect(); return [(e.clientX - r.left) * sc.width / r.width, (e.clientY - r.top) * sc.height / r.height]; }
-  sc.onpointerdown = function (e) { drawing = true; sc.setPointerCapture(e.pointerId); var p = sp(e); sx.beginPath(); sx.moveTo(p[0], p[1]); };
-  sc.onpointermove = function (e) { if (!drawing) { return; } var p = sp(e); sx.lineTo(p[0], p[1]); sx.stroke(); };
-  sc.onpointerup = function () { drawing = false; };
-  var sgMode = 'type', sgFont = 'FH Dancing';
-  var sgOpts = root.querySelectorAll('.pe2-sgopt'), sgName = $('#pe2-sg-name');
-  function sgFontStr(f, px) { return px + 'px "' + f + '", cursive'; }
+  function fstr(f, px) { return px + 'px "' + f + '", cursive'; }
+  SIGF.forEach(function (f, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'pe2-sgopt' + (i ? '' : ' on'); b.dataset.f = f[0]; b.title = f[1];
+    b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', i ? 'false' : 'true');
+    b.onclick = function () { sgFont = f[0]; optBox.querySelectorAll('.pe2-sgopt').forEach(function (o) { var on = o === b; o.classList.toggle('on', on); o.setAttribute('aria-checked', on ? 'true' : 'false'); }); };
+    optBox.appendChild(b);
+  });
   function sgPreview() {
-    var txt = sgName.value.trim() || 'Your Name', col = $('#pe2-color').value;
-    sgOpts.forEach(function (b) {
-      b.textContent = txt; b.style.fontFamily = '"' + b.dataset.f + '", cursive'; b.style.color = col;
-      if (document.fonts && document.fonts.load) { document.fonts.load(sgFontStr(b.dataset.f, 32), txt).then(function () { b.style.fontFamily = '"' + b.dataset.f + '", cursive'; }); }
+    var txt = sgName.value.trim() || 'Your Name';
+    optBox.querySelectorAll('.pe2-sgopt').forEach(function (b) {
+      b.textContent = txt; b.style.fontFamily = '"' + b.dataset.f + '", cursive'; b.style.color = sgColor;
+      if (document.fonts && document.fonts.load) { document.fonts.load(fstr(b.dataset.f, 32), txt).then(function () { b.style.fontFamily = '"' + b.dataset.f + '", cursive'; }); }
     });
   }
   function sgSetMode(m) {
     sgMode = m;
     root.querySelectorAll('[data-sg]').forEach(function (b) { b.classList.toggle('on', b.dataset.sg === m); });
-    $('#pe2-sg-type').hidden = m !== 'type'; $('#pe2-sg-draw').hidden = m !== 'draw'; $('#pe2-sclear').hidden = m !== 'draw';
+    $('#pe2-sg-type').hidden = m !== 'type'; $('#pe2-sg-draw').hidden = m !== 'draw'; $('#pe2-sg-up').hidden = m !== 'up';
+    $('#pe2-sclear').hidden = m !== 'draw'; $('#pe2-sg-colors').hidden = m === 'up';
   }
   root.querySelectorAll('[data-sg]').forEach(function (b) { b.onclick = function () { sgSetMode(b.dataset.sg); }; });
-  sgOpts.forEach(function (b) {
+  root.querySelectorAll('#pe2-sg-colors button').forEach(function (b) {
     b.onclick = function () {
-      sgFont = b.dataset.f;
-      sgOpts.forEach(function (o) { var on = o === b; o.classList.toggle('on', on); o.setAttribute('aria-checked', on ? 'true' : 'false'); });
+      sgColor = b.dataset.c; root.querySelectorAll('#pe2-sg-colors button').forEach(function (o) { o.classList.toggle('on', o === b); });
+      sgPreview();
     };
   });
   sgName.oninput = sgPreview;
-  $('#pe2-signbtn').onclick = function () {
-    sx.strokeStyle = $('#pe2-color').value; sx.clearRect(0, 0, sc.width, sc.height);
-    sgPreview(); $('#pe2-modal').classList.add('on'); sgName.focus();
-  };
+  function sp(e) { var r = sc.getBoundingClientRect(); return [(e.clientX - r.left) * sc.width / r.width, (e.clientY - r.top) * sc.height / r.height]; }
+  sc.onpointerdown = function (e) { drawing = true; sx.strokeStyle = sgColor; sc.setPointerCapture(e.pointerId); var p = sp(e); sx.beginPath(); sx.moveTo(p[0], p[1]); };
+  sc.onpointermove = function (e) { if (!drawing) { return; } var p = sp(e); sx.lineTo(p[0], p[1]); sx.stroke(); };
+  sc.onpointerup = function () { drawing = false; };
   $('#pe2-sclear').onclick = function () { sx.clearRect(0, 0, sc.width, sc.height); };
-  $('#pe2-scancel').onclick = function () { $('#pe2-modal').classList.remove('on'); };
+  /* upload image */
+  function upRender() {
+    if (!sgUp) { return; }
+    var w = sgUp.width, h = sgUp.height; upPrev.width = w; upPrev.height = h;
+    var cx = upPrev.getContext('2d'); cx.clearRect(0, 0, w, h); cx.drawImage(sgUp, 0, 0);
+    if (sgVer === 'trans') {
+      var im = cx.getImageData(0, 0, w, h), d = im.data;
+      for (var i = 0; i < d.length; i += 4) {
+        var lum = .299 * d[i] + .587 * d[i + 1] + .114 * d[i + 2], a = Math.max(0, Math.min(255, (235 - lum) * 4));
+        d[i + 3] = Math.min(d[i + 3], a);
+      }
+      cx.putImageData(im, 0, 0);
+    }
+    upPrev.hidden = false; $('#pe2-sg-ver').hidden = false;
+  }
+  $('#pe2-sg-file').onchange = function (e) {
+    var f = e.target.files[0]; if (!f) { return; }
+    var u = URL.createObjectURL(f), im = new Image();
+    im.onload = function () {
+      var k = Math.min(1, 900 / im.naturalWidth), c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); sgUp = c; URL.revokeObjectURL(u); upRender();
+    };
+    im.onerror = function () { status('Sorry, that image format is not supported.', true); };
+    im.src = u;
+  };
+  root.querySelectorAll('#pe2-sg-ver [data-v]').forEach(function (b) {
+    b.onclick = function () { sgVer = b.dataset.v; root.querySelectorAll('#pe2-sg-ver [data-v]').forEach(function (o) { o.classList.toggle('on', o === b); }); upRender(); };
+  });
+  /* saved signatures */
+  function loadSaved() { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } }
+  function storeSaved(a) { try { localStorage.setItem(KEY, JSON.stringify(a.slice(0, 5))); } catch (e) { /* storage full or blocked */ } }
+  function renderSaved() {
+    var box = $('#pe2-signlist'); box.innerHTML = '';
+    loadSaved().forEach(function (s, i) {
+      var row = document.createElement('div'); row.className = 'pe2-saved';
+      var pick = document.createElement('button'); pick.type = 'button'; pick.className = 'pick'; pick.title = 'Use this signature';
+      var im = document.createElement('img'); im.src = s.src; im.alt = 'Saved signature ' + (i + 1); pick.appendChild(im);
+      pick.onclick = function () { pending = { src: s.src, r: s.r }; setTool('place'); document.activeElement.blur(); };
+      var del = document.createElement('button'); del.type = 'button'; del.className = 'del'; del.textContent = '\u00d7'; del.title = 'Remove saved signature';
+      del.onclick = function () { var a = loadSaved(); a.splice(i, 1); storeSaved(a); renderSaved(); };
+      row.appendChild(pick); row.appendChild(del); box.appendChild(row);
+    });
+  }
+  renderSaved();
+  /* open / close / save */
+  function closeModal() { $('#pe2-modal').classList.remove('on'); }
+  $('#pe2-signnew').onclick = function () {
+    sx.clearRect(0, 0, sc.width, sc.height); sgPreview(); sgSetMode('type');
+    $('#pe2-modal').classList.add('on'); sgName.focus(); document.activeElement === sgName || sgName.focus();
+  };
+  $('#pe2-scancel').onclick = closeModal; $('#pe2-mx').onclick = closeModal;
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') { return; }
+    if ($('#pe2-modal').classList.contains('on')) { closeModal(); } else if (tool === 'place') { pending = null; setTool('select'); }
+  });
   function sgFinish(cv) {
     var d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data, x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
     for (var y = 0; y < cv.height; y++) { for (var x = 0; x < cv.width; x++) { if (d[(y * cv.width + x) * 4 + 3] > 10) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } } }
     if (x1 < 0) { return false; }
     var w = x1 - x0 + 8, h = y1 - y0 + 8, c = document.createElement('canvas'); c.width = w; c.height = h;
     c.getContext('2d').drawImage(cv, x0 - 4, y0 - 4, w, h, 0, 0, w, h);
-    pending = { src: c.toDataURL('image/png'), r: h / w }; $('#pe2-modal').classList.remove('on'); setTool('place');
-    return true;
+    pending = { src: c.toDataURL('image/png'), r: h / w };
+    if ($('#pe2-sg-save').checked) { var a = loadSaved(); a.unshift({ src: pending.src, r: pending.r }); storeSaved(a); renderSaved(); }
+    closeModal(); setTool('place'); return true;
   }
   $('#pe2-suse').onclick = function () {
     if (sgMode === 'draw') { sgFinish(sc); return; }
+    if (sgMode === 'up') { if (sgUp) { sgFinish(upPrev); } return; }
     var txt = sgName.value.trim(); if (!txt) { sgName.focus(); return; }
-    var fs = sgFontStr(sgFont, 120);
+    var fs = fstr(sgFont, 120);
     var go = function () {
       var cv = document.createElement('canvas'); cv.width = 1400; cv.height = 300;
-      var cx = cv.getContext('2d'); cx.font = fs; cx.fillStyle = $('#pe2-color').value; cx.textBaseline = 'middle'; cx.textAlign = 'left';
-      var w = cx.measureText(txt).width; if (w > 1360) { cv.width = Math.ceil(w) + 40; cx = cv.getContext('2d'); cx.font = fs; cx.fillStyle = $('#pe2-color').value; cx.textBaseline = 'middle'; }
-      cx.fillText(txt, 20, 150); sgFinish(cv);
+      var cx = cv.getContext('2d'); cx.font = fs;
+      var w = cx.measureText(txt).width; if (w > 1360) { cv.width = Math.ceil(w) + 40; cx = cv.getContext('2d'); cx.font = fs; }
+      cx.fillStyle = sgColor; cx.textBaseline = 'middle'; cx.textAlign = 'left'; cx.fillText(txt, 20, 150); sgFinish(cv);
     };
     if (document.fonts && document.fonts.load) { document.fonts.load(fs, txt).then(go, go); } else { go(); }
   };
