@@ -292,6 +292,7 @@
 
   /* ------------------------------------------------------------------ UI */
   function updateUi() {
+    var sjn = $('sj-pagenum'); if (sjn) { sjn.textContent = String(cur + 1); }
     $('pe-pagelabel').textContent = 'Page ' + (cur + 1) + ' of ' + pages.length;
     $('pe-zoomlabel').textContent = Math.round(zoom * 100) + '%';
     app.querySelector('[data-act="undo"]').disabled = histPos <= 0;
@@ -996,4 +997,14 @@
   window.addEventListener('beforeunload', function (e) { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
   window.addEventListener('resize', function () { if (pages.length) { updateUi(); } });
   window.FHPdfEditor = { buildPdf: buildPdf, state: function () { return { pages: pages, cur: cur, zoom: zoom }; } };
+})();
+
+/* Sejda-style dropdown menus */
+(function () {
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('[data-dd]') : null;
+    Array.prototype.forEach.call(document.querySelectorAll('.sj-menu.open'), function (m) { if (!t || m.previousElementSibling !== t) { m.classList.remove('open'); } });
+    if (t) { t.nextElementSibling.classList.toggle('open'); }
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { Array.prototype.forEach.call(document.querySelectorAll('.sj-menu.open'), function (m) { m.classList.remove('open'); }); } });
 })();
