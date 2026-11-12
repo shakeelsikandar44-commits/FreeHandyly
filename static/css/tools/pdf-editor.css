@@ -1,3 +1,15 @@
+@font-face{font-family:'FH Lib Sans';src:url('/static/fonts/pdf/LiberationSans-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Lib Sans';src:url('/static/fonts/pdf/LiberationSans-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Lib Sans';src:url('/static/fonts/pdf/LiberationSans-Italic.ttf') format('truetype');font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:'FH Lib Sans';src:url('/static/fonts/pdf/LiberationSans-BoldItalic.ttf') format('truetype');font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:'FH Lib Serif';src:url('/static/fonts/pdf/LiberationSerif-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Lib Serif';src:url('/static/fonts/pdf/LiberationSerif-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Lib Serif';src:url('/static/fonts/pdf/LiberationSerif-Italic.ttf') format('truetype');font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:'FH Lib Serif';src:url('/static/fonts/pdf/LiberationSerif-BoldItalic.ttf') format('truetype');font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:'FH Lib Mono';src:url('/static/fonts/pdf/LiberationMono-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Lib Mono';src:url('/static/fonts/pdf/LiberationMono-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'FH Lib Mono';src:url('/static/fonts/pdf/LiberationMono-Italic.ttf') format('truetype');font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:'FH Lib Mono';src:url('/static/fonts/pdf/LiberationMono-BoldItalic.ttf') format('truetype');font-weight:700;font-style:italic;font-display:swap}
 @font-face{font-family:'FH Parisienne';src:url('/static/fonts/signature/parisienne.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:'FH Alex';src:url('/static/fonts/signature/alex-brush.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:'FH Yellowtail';src:url('/static/fonts/signature/yellowtail.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
@@ -66,3 +78,15 @@
 #pe2-root .pe2-saved button.pick{border:0;background:none;cursor:pointer;padding:.2rem}
 #pe2-root .pe2-saved img{max-height:30px;max-width:150px;display:block}
 #pe2-root .pe2-saved .del{border:0;background:none;color:#dc2626;font-size:1.2rem;cursor:pointer}
+
+#pe2-root[data-tool=text] .po.src,#pe2-root[data-tool=text] .po.edit,#pe2-root[data-tool=select] .po.edit{pointer-events:auto}
+#pe2-root .po.src{cursor:text}
+#pe2-root .po.src:hover{outline:1px solid rgba(15,118,110,.8);background:rgba(15,118,110,.1)}
+#pe2-root .po.edit{outline:1px dashed var(--acc);cursor:text;overflow:visible}
+#pe2-root .po.edit .t{outline:0;white-space:pre;min-width:10px}
+
+#pe2-root .po.fw{box-sizing:border-box;background:rgba(173,205,255,.45);border:1px solid #6b9be0;border-radius:2px;padding:0 .2em;margin:0;font-family:Helvetica,Arial,sans-serif;color:#111;outline:0}
+#pe2-root .po.fw:focus{background:rgba(173,205,255,.7);outline:2px solid var(--acc)}
+#pe2-root .po.fw-cb,#pe2-root .po.fw-rb{padding:0;accent-color:var(--acc);cursor:pointer}
+#pe2-root .po.fw-tx{resize:none}
+#pe2-root .po.fw:hover{outline:1px dashed var(--acc)}

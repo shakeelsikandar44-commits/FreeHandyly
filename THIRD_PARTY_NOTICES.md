@@ -9,6 +9,7 @@ This project bundles the following open-source software. Each keeps its own lice
 | [pdf-lib](https://pdf-lib.js.org/) | see file header | MIT | `static/js/vendor/pdf-lib.min.js` |
 | [MediaPipe Selfie Segmentation](https://github.com/google/mediapipe) | 0.1.1675465747 | Apache-2.0 | `static/js/vendor/mediapipe/` |
 | [FFmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) (@ffmpeg/ffmpeg 0.12.10, @ffmpeg/util 0.12.1, @ffmpeg/core 0.12.6) | 0.12.x | MIT wrapper; the FFmpeg core contains LGPL and GPL components (FFmpeg, x264, LAME) | `static/js/vendor/ffmpeg/` |
+| [@pdf-lib/fontkit](https://github.com/Hopding/fontkit) | 1.1.1 | MIT | `static/js/vendor/fontkit.umd.min.js` |
 | [Flask](https://flask.palletsprojects.com/) | 3.1.3 | BSD-3-Clause | Python dependency |
 | [gunicorn](https://gunicorn.org/) | 26.2.0 | MIT | Python dependency |
 
@@ -20,3 +21,6 @@ Exchange rates come from the [@fawazahmed0/currency-api](https://github.com/fawa
 
 ## Inter and Bricolage Grotesque (page fonts)
 Self-hosted variable fonts (latin subset) from the Fontsource packages @fontsource-variable/inter and @fontsource-variable/bricolage-grotesque. Licensed under the SIL Open Font License 1.1.
+
+## Liberation fonts (PDF editor)
+Liberation Sans, Serif and Mono 2.1.x (metric-compatible with Arial, Times New Roman and Courier New) in `static/fonts/pdf/`, used when editing existing PDF text. Licensed under the SIL Open Font License 1.1; see `static/fonts/pdf/LICENSE-liberation.txt`.
