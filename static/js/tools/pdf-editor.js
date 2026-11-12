@@ -367,3 +367,16 @@
     btn.textContent = old; btn.disabled = false;
   };
 })();
+
+/* Keep the editing toolbar (incl. Apply/Download) visible below the sticky site header while scrolling */
+(function(){
+  function setTop(){
+    var h=document.querySelector('.site-header');
+    var root=document.getElementById('pe2-root');
+    if(root) root.style.setProperty('--pe2-top',(h?h.offsetHeight:0)+'px');
+  }
+  window.addEventListener('resize',setTop);
+  window.addEventListener('load',setTop);
+  document.addEventListener('DOMContentLoaded',setTop);
+  setTop();
+})();
