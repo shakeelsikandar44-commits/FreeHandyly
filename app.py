@@ -110,6 +110,12 @@ def security_headers(resp):
     return resp
 
 
+@app.get("/apple-touch-icon.png")
+@app.get("/apple-touch-icon-precomposed.png")
+def apple_touch_icon():
+    return send_from_directory(app.static_folder + "/img", "apple-touch-icon.png")
+
+
 @app.get("/favicon.ico")
 def favicon():
     return send_from_directory(app.static_folder, "favicon.ico")
