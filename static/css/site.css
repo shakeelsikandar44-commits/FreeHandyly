@@ -1,3 +1,6 @@
+/* Self-hosted fonts (SIL OFL): no requests to Google. Latin subset, variable weight. */
+@font-face{font-family:"Inter";src:url("/static/fonts/inter-latin-wght.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Bricolage Grotesque";src:url("/static/fonts/bricolage-grotesque-latin-wght.woff2") format("woff2");font-weight:200 800;font-style:normal;font-display:swap}
 @font-face { font-family: 'FH Dancing'; src: url('/static/fonts/signature/dancing-script.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: 'FH Vibes'; src: url('/static/fonts/signature/great-vibes.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: 'FH Allura'; src: url('/static/fonts/signature/allura.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }

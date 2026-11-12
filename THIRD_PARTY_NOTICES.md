@@ -17,3 +17,6 @@ Signature fonts bundled in `static/fonts/signature/` (SIL Open Font License 1.1,
 Fonts loaded from Google Fonts: Bricolage Grotesque and Inter (SIL Open Font License 1.1).
 
 Exchange rates come from the [@fawazahmed0/currency-api](https://github.com/fawazahmed0/exchange-api) dataset; check its terms before heavy commercial use.
+
+## Inter and Bricolage Grotesque (page fonts)
+Self-hosted variable fonts (latin subset) from the Fontsource packages @fontsource-variable/inter and @fontsource-variable/bricolage-grotesque. Licensed under the SIL Open Font License 1.1.

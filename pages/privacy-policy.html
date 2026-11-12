@@ -28,11 +28,10 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/static/img/favicon-192.png">
   <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="preload" href="/static/fonts/inter-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/bricolage-grotesque-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/static/css/site.css">
+  <link rel="stylesheet" href="/static/css/site.css?v=20261112">
 
   
   
@@ -134,7 +133,7 @@
   <ul>
     <li><strong>Currency &amp; Crypto Converter.</strong> Exchange rates are collected by our server from public data sources and passed to your browser. If that fails, your browser may load the rates directly from a public data provider on a content delivery network.</li>
     <li><strong>PDF Editor.</strong> The PDF engine is served from our own site. If it cannot load, the page can fall back to a public content delivery network.</li>
-    <li><strong>Fonts.</strong> Page fonts are loaded from Google Fonts.</li>
+    <li><strong>Fonts.</strong> Page fonts are hosted on our own server. No request is sent to Google or any font service.</li>
   </ul>
   <p>Your documents and images are never sent to any of these services. Their own privacy policies apply to the connection requests they receive.</p>
   <h2 id="contact">Messages you send us</h2>
