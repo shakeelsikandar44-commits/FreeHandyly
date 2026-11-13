@@ -9,18 +9,18 @@
 
   var SAMPLE = {
     tpl: 'modern', accent: '#0A63E8', size: 'normal', showPhoto: true, photo: '',
-    name: 'Ayesha Khan', title: 'Digital Marketing Manager', email: 'ayesha.khan@example.com', phone: '+92 300 1234567',
-    location: 'Lahore, Pakistan', link1: 'linkedin.com/in/ayeshakhan', link2: '',
+    name: 'Ana Smith', title: 'Digital Marketing Manager', email: 'ana.smith@example.com', phone: '+1 000 000 0000',
+    location: 'New York, USA', link1: 'linkedin.com/in/anasmith', link2: '',
     summary: 'Results-driven marketing manager with 6+ years of experience growing brands through SEO, paid media and content strategy. Skilled at turning data into clear campaigns that increase traffic, leads and revenue.',
     exp: [
-      { role: 'Digital Marketing Manager', company: 'BrightPath Agency', place: 'Lahore', start: 'Mar 2021', end: 'Present',
+      { role: 'Digital Marketing Manager', company: 'BrightPath Agency', place: 'New York', start: 'Mar 2021', end: 'Present',
         bullets: 'Led a team of 5 to manage campaigns for 20+ clients\nIncreased organic traffic by 120% in 12 months through SEO and content\nReduced cost per lead by 28% by optimising paid campaigns' },
-      { role: 'Marketing Executive', company: 'Nova Retail', place: 'Karachi', start: 'Jun 2018', end: 'Feb 2021',
+      { role: 'Marketing Executive', company: 'Nova Retail', place: 'Chicago', start: 'Jun 2018', end: 'Feb 2021',
         bullets: 'Planned and ran social media campaigns reaching 500K+ people\nCreated weekly email newsletters with a 32% average open rate' }
     ],
-    edu: [{ degree: 'BBA in Marketing', school: 'Lahore University', place: 'Lahore', start: '2014', end: '2018', details: 'First class honours. President of the marketing society.' }],
+    edu: [{ degree: 'BBA in Marketing', school: 'State University', place: 'New York', start: '2014', end: '2018', details: 'First class honours. President of the marketing society.' }],
     skills: 'SEO, Google Analytics, Google Ads, Content Strategy, Social Media, Email Marketing, Team Leadership',
-    langs: 'English (fluent), Urdu (native)',
+    langs: 'English (native), Spanish (conversational)',
     extraTitle: 'Certifications', extra: [{ title: 'Google Analytics Certification', sub: '2023', desc: '' }, { title: 'HubSpot Content Marketing', sub: '2022', desc: '' }]
   };
   var LISTS = {
