@@ -46,6 +46,10 @@
 .rs-photo { flex: none; width: 88px; height: 88px; border-radius: 50%; object-fit: cover; }
 .rs-h { font-size: 1.02em; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; margin: 16px 0 8px; break-after: avoid; }
 .rs-entry { margin-bottom: 10px; break-inside: avoid; }
+.rs-entry.rs-long { break-inside: auto; }
+.rs-line, .rs-sub { break-after: avoid; }
+.rs-entry li, .rs-text { orphans: 2; widows: 2; }
+.rs-entry li { break-inside: avoid; }
 .rs-line { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
 .rs-role { font-weight: 700; } .rs-date { font-size: .9em; white-space: nowrap; color: #4b5563; }
 .rs-sub { font-size: .95em; color: #374151; }
@@ -86,3 +90,6 @@
   #rs-print-root, #rs-print-root * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   #rs-print-root .rs-paper { width: auto; min-height: 0; padding: 0; margin: 0; box-shadow: none; transform: none !important; }
 }
+
+/* text areas grow with their content (still resizable by hand) */
+.rs textarea.form-control, .rs-card textarea.form-control { resize: vertical; overflow: hidden; min-height: 4.2rem; line-height: 1.45; }

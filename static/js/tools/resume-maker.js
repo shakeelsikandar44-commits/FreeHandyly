@@ -66,6 +66,7 @@
     e.appendChild(line); if (sub) { e.appendChild(el('div', 'rs-sub', sub)); }
     var b = bullets(bulletText); if (b.length) { var ul = el('ul'); b.forEach(function (t) { ul.appendChild(el('li', '', t)); }); e.appendChild(ul); }
     if (desc && desc.trim()) { e.appendChild(el('p', 'rs-text', desc.trim())); }
+    if ((bulletText || '').length + (desc || '').length > 450) { e.className += ' rs-long'; }   /* long entries may continue on the next page */
     parent.appendChild(e);
   }
   function render() {
@@ -142,12 +143,13 @@
       cfg.fields.forEach(function (f) {
         var wrap = el('div', f[2] === 'textarea' || f[0] === 'role' || f[0] === 'degree' || f[0] === 'title' ? 'full' : ''), id = 'rs-' + key + '-' + i + '-' + f[0];
         var lab = el('label', 'form-label small mb-1', f[1]); lab.setAttribute('for', id);
-        var inp = f[2] === 'textarea' ? el('textarea', 'form-control') : el('input', 'form-control'); inp.id = id; if (f[2] === 'textarea') { inp.rows = 3; } else { inp.type = 'text'; }
-        inp.maxLength = f[2] === 'textarea' ? 800 : 80; inp.value = item[f[0]] || '';
+        var inp = f[2] === 'textarea' ? el('textarea', 'form-control') : el('input', 'form-control'); inp.id = id; if (f[2] === 'textarea') { inp.rows = 4; } else { inp.type = 'text'; }
+        inp.maxLength = f[2] === 'textarea' ? 3000 : 80; inp.value = item[f[0]] || '';
         inp.addEventListener('input', function () { item[f[0]] = inp.value; changed(); });
         wrap.appendChild(lab); wrap.appendChild(inp); grid.appendChild(wrap);
       });
       card.appendChild(grid); host.appendChild(card);
+      Array.prototype.forEach.call(card.querySelectorAll('textarea'), grow);
     });
   }
   Array.prototype.forEach.call(document.querySelectorAll('[data-add]'), function (b) {
@@ -200,8 +202,20 @@
     window.print();
   });
 
+  /* ------------------------------------------------- text boxes grow with the text */
+  function grow(t) {
+    if (!t || t.tagName !== 'TEXTAREA') { return; }
+    t.style.height = 'auto';
+    if (t.scrollHeight) { t.style.height = (t.scrollHeight + 2) + 'px'; }
+  }
+  function growAll() { Array.prototype.forEach.call(document.querySelectorAll('textarea'), grow); }
+  document.addEventListener('input', function (e) { grow(e.target); });
+  Array.prototype.forEach.call(document.querySelectorAll('details'), function (d) { d.addEventListener('toggle', growAll); });
+  var growT; window.addEventListener('resize', function () { clearTimeout(growT); growT = setTimeout(growAll, 150); });
+  window.addEventListener('load', growAll);
+
   /* ----------------------------------------------------------------- init */
-  state = loadState(); fillForm(); render();
+  state = loadState(); fillForm(); render(); growAll();
   if (window.ResizeObserver) { new ResizeObserver(fitPreview).observe(scroller); }
   window.FHResume = { prepPrint: prepPrint, cleanupPrint: cleanupPrint, state: function () { return state; } };
 })();
