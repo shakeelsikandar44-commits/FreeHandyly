@@ -1,6 +1,8 @@
 """Exchange-rate proxy used by the Currency & Crypto Converter (served at /api/rates).
 
-Rates come from the free @fawazahmed0/currency-api dataset (USD base, fiat + crypto), are cached in memory for an hour and
+Fiat rates come from the free @fawazahmed0/currency-api dataset (USD base), which is published once a day. Crypto prices are
+refreshed about every two minutes from Coinbase's public price feed; if that feed is unavailable the daily dataset's crypto
+values are used instead (and the response says so through "crypto_updated"). Everything is cached in memory and
 the last good copy is served (flagged "stale") if the upstream is briefly unavailable. The tool's JavaScript falls back to
 fetching the same public sources straight from the browser if this endpoint ever fails."""
 import json
@@ -48,7 +50,7 @@ def _download():
     raise RuntimeError("no rate source available: %r" % (last,))
 
 
-def get_rates():
+def _get_base():
     """Returns (data, ok). Raises RuntimeError only when there is neither fresh nor cached data."""
     with _lock:
         now = time.time()
@@ -61,3 +63,54 @@ def get_rates():
             if _cache["data"]:
                 return dict(_cache["data"], stale=True)
             raise
+
+
+LIVE_URL = "https://api.coinbase.com/v2/exchange-rates?currency=USD"   # public, no API key; units of each asset per 1 USD
+LIVE_TTL = 120
+LIVE_KEEP = 900          # keep serving the last good live copy for up to 15 minutes if the feed fails
+_live = {"data": {}, "at": 0.0, "stamp": ""}
+
+
+def _download_live():
+    req = urllib.request.Request(LIVE_URL, headers={"User-Agent": "FreeHandyly/1.0", "Accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=6) as r:
+        rates = ((json.loads(r.read().decode("utf-8")) or {}).get("data") or {}).get("rates") or {}
+    out = {}
+    for code in CRYPTO:
+        try:
+            v = float(rates.get(code) or 0)
+        except (TypeError, ValueError):
+            v = 0.0
+        if v > 0:
+            out[code] = 1 / v            # USD price of one coin
+    return out
+
+
+def _live_crypto():
+    """Returns ({code: usd_price}, "YYYY-MM-DD HH:MM UTC") or ({}, "") when no recent live data exists."""
+    with _lock:
+        now = time.time()
+        if _live["data"] and now - _live["at"] < LIVE_TTL:
+            return _live["data"], _live["stamp"]
+        try:
+            data = _download_live()
+        except Exception:  # noqa: BLE001 - the daily dataset is the fallback
+            data = {}
+        if data:
+            _live.update(data=data, at=now, stamp=time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(now)))
+            return data, _live["stamp"]
+        if _live["data"] and now - _live["at"] < LIVE_KEEP:
+            return _live["data"], _live["stamp"]
+        return {}, ""
+
+
+def get_rates():
+    base = _get_base()
+    live, stamp = _live_crypto()
+    if len(live) < 5:        # too little to trust: keep the daily values for every coin
+        return base
+    out = dict(base)
+    out["crypto"] = dict(base.get("crypto") or {}, **live)
+    out["crypto_updated"] = stamp
+    out["source"] = (base.get("source") or "currency-api") + " + Coinbase (crypto)"
+    return out

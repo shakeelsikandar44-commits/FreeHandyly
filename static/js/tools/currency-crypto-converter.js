@@ -134,7 +134,7 @@
       });
     }
     if (!shown) { var tr0 = document.createElement('tr'), td0 = U.el('td', null, 'Live crypto prices are not available right now. Try again in a minute.'); td0.colSpan = 3; tr0.appendChild(td0); body.appendChild(tr0); }
-    if (upd) { upd.textContent = shown && statusEl.textContent ? 'Updated: ' + (lastUpdated || '') : ''; }
+    if (upd) { upd.textContent = shown && lastUpdated ? 'Crypto prices updated: ' + lastUpdated + (/\d:\d\d/.test(lastUpdated) ? '.' : ' (daily rate; the live price feed was unavailable).') : ''; }
   }
 
   /* ---- loading live rates (server first, then public backup sources straight from the browser) ---- */
