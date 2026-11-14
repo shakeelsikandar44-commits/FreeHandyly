@@ -563,3 +563,14 @@ img, svg { max-width: 100%; }
 .vt-presets .btn[aria-pressed="true"] { background: var(--tint); border-color: var(--blue); color: var(--blue-dark); }
 .vt-result { border-top: 1px solid var(--line); margin-top: 1.2rem; padding-top: 1rem; }
 .vt-result video { max-width: 100%; max-height: 50vh; border-radius: 14px; background: #0B2347; }
+
+/* ---- phones: keep every part of the page reachable by scrolling ---- */
+@media (max-width: 991.98px) {
+  /* the open menu can be taller than the screen (the header is sticky), so let the menu scroll by itself */
+  .site-header .navbar-collapse { max-height: calc(100vh - 4.5rem); max-height: calc(100dvh - 4.5rem); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: .75rem; }
+}
+@media (max-width: 767.98px) {
+  /* no scroll boxes inside the page: they swallow the swipe that should scroll the page */
+  .cc-table-wrap { max-height: none; overflow-y: visible; overflow-x: auto; }
+  .side-links { max-height: none; overflow-y: visible; }
+}

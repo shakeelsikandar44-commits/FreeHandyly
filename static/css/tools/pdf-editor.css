@@ -90,3 +90,6 @@
 #pe2-root .po.fw-cb,#pe2-root .po.fw-rb{padding:0;accent-color:var(--acc);cursor:pointer}
 #pe2-root .po.fw-tx{resize:none}
 #pe2-root .po.fw:hover{outline:1px dashed var(--acc)}
+
+/* phones: the toolbar is too tall to pin (it would cover a third of the screen) */
+@media (max-width: 767.98px) { #pe2-root .pe2-tb { position: static; box-shadow: none; } }

@@ -252,6 +252,7 @@
     mode = m;
     Array.prototype.forEach.call(app.querySelectorAll('[data-mode]'), function (b) { var on = b.getAttribute('data-mode') === m; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
     canvas.style.cursor = m === 'wand' ? 'crosshair' : 'none'; cursor.hidden = true;
+    canvas.style.touchAction = m === 'wand' ? 'pan-x pan-y pinch-zoom' : 'none';   /* a tap is enough for the wand, so let the finger scroll the page */
   }
   ['tol', 'brush', 'smooth', 'shift'].forEach(function (k) {
     var el = $('br-' + k);
