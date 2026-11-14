@@ -5,12 +5,14 @@
   var canvas = $('rs-canvas'); if (!canvas) { return; }
   var ctx = canvas.getContext('2d');
   var PRESETS = [
+    ['Instagram portrait post, 4:5 (1080 x 1350)', 1080, 1350],
+    ['Instagram tall post, 3:4 grid size (1080 x 1440)', 1080, 1440],
+    ['Instagram square post (1080 x 1080)', 1080, 1080],
+    ['Instagram landscape post (1080 x 566)', 1080, 566],
+    ['Instagram Story, Reel, TikTok, Shorts (1080 x 1920)', 1080, 1920],
+    ['Instagram profile picture (320 x 320)', 320, 320],
     ['YouTube thumbnail (1280 x 720)', 1280, 720],
     ['YouTube channel banner (2560 x 1440)', 2560, 1440],
-    ['Instagram square post (1080 x 1080)', 1080, 1080],
-    ['Instagram portrait post (1080 x 1350)', 1080, 1350],
-    ['Instagram landscape post (1080 x 566)', 1080, 566],
-    ['Stories, Reels, TikTok, Shorts (1080 x 1920)', 1080, 1920],
     ['Facebook shared image (1200 x 630)', 1200, 630],
     ['X (Twitter) post image (1600 x 900)', 1600, 900],
     ['LinkedIn post (1200 x 627)', 1200, 627],
@@ -81,6 +83,14 @@
       if (!blob) { info.textContent = 'Your browser could not export this format.'; info.className = 'status-line err'; return; }
       U.download(blob, fileName + '-' + s.w + 'x' + s.h + '.' + U.extFor(blob.type));
     });
+  });
+
+  /* "Use this size" buttons in the Instagram size table */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button[data-size]'); if (!b) { return; }
+    var m = /^(\d+)x(\d+)$/.exec(b.getAttribute('data-size')); if (!m) { return; }
+    wEl.value = m[1]; hEl.value = m[2]; onSizeInput();
+    var t = $('tool'); if (t && t.scrollIntoView) { t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   });
 
   preset.value = '0'; onPreset();

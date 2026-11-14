@@ -108,12 +108,34 @@
     });
     if (!allEl.children.length) { var tr0 = document.createElement('tr'), td0 = U.el('td', null, 'No currency matches your search.'); td0.colSpan = 3; tr0.appendChild(td0); allEl.appendChild(tr0); }
   }
-  var raf = 0;
+  var raf = 0, lastUpdated = '';
   function refresh(full) {
     renderResult(); if (!full) { return; }
     cancelAnimationFrame(raf); raf = requestAnimationFrame(function () { renderQuick(); renderAll(); });
   }
   function setStatus(msg, isErr) { statusEl.textContent = msg || ''; statusEl.className = 'status-line mb-0' + (isErr ? ' err' : ''); }
+
+  /* ---- crypto prices in PKR table ---- */
+  function money(v, sym) {
+    var d = v >= 1000 ? 0 : v >= 1 ? 2 : v >= .01 ? 4 : 6;
+    return sym + new Intl.NumberFormat('en-US', { minimumFractionDigits: v >= 1 && v < 1000 ? 2 : 0, maximumFractionDigits: d }).format(v);
+  }
+  function renderPk() {
+    var body = $('pk-body'); if (!body) { return; }
+    body.textContent = '';
+    var pkr = fiat && fiat.PKR, upd = $('pk-updated'), shown = 0;
+    if (haveRates && pkr > 0) {
+      CRYPTO.forEach(function (code) {
+        var usd = crypto[code]; if (!(usd > 0)) { return; }
+        var tr = document.createElement('tr'), c1 = document.createElement('td');
+        c1.appendChild(U.el('b', null, code)); c1.appendChild(document.createTextNode(' ' + nameOf(code)));
+        tr.appendChild(c1); tr.appendChild(U.el('td', { 'class': 'text-end fw-semibold' }, money(usd * pkr, 'Rs '))); tr.appendChild(U.el('td', { 'class': 'text-end' }, money(usd, '$')));
+        body.appendChild(tr); shown++;
+      });
+    }
+    if (!shown) { var tr0 = document.createElement('tr'), td0 = U.el('td', null, 'Live crypto prices are not available right now. Try again in a minute.'); td0.colSpan = 3; tr0.appendChild(td0); body.appendChild(tr0); }
+    if (upd) { upd.textContent = shown && statusEl.textContent ? 'Updated: ' + (lastUpdated || '') : ''; }
+  }
 
   /* ---- loading live rates (server first, then public backup sources straight from the browser) ---- */
   function fromServer() {
@@ -143,13 +165,14 @@
     if (d.fiat_updated) { parts.push('Currency rates: ' + String(d.fiat_updated).replace(/ \+0000$/, ' UTC')); }
     if (d.crypto_updated && d.crypto_updated !== d.fiat_updated) { parts.push('Crypto: ' + d.crypto_updated); }
     if (d.source) { parts.push('Source: ' + d.source); }
-    setStatus(parts.join('  \u2022  ') + (d.stale ? '  (slightly out of date)' : '')); retryBtn.hidden = true; refresh(true);
+    lastUpdated = String(d.crypto_updated || d.fiat_updated || '').replace(/ \+0000$/, ' UTC');
+    setStatus(parts.join('  \u2022  ') + (d.stale ? '  (slightly out of date)' : '')); retryBtn.hidden = true; refresh(true); renderPk();
   }
   function load() {
     retryBtn.hidden = true; failed = false; setStatus('Loading live exchange rates\u2026'); refresh(false);
     return fetchRates().then(apply, function () {
       failed = true; haveRates = false; retryBtn.hidden = false;
-      setStatus('Could not load live exchange rates. Check your internet connection or try again in a minute.', true); refresh(true);
+      setStatus('Could not load live exchange rates. Check your internet connection or try again in a minute.', true); refresh(true); renderPk();
     });
   }
 
