@@ -2,6 +2,7 @@
 
 The tools themselves run in the visitor's browser; this app serves the pages, static files, sitemap/robots,
 tool search and the contact form. Configuration is read from environment variables (see .env.example)."""
+import hashlib
 import html
 import json
 import logging
@@ -59,8 +60,32 @@ def site_url():
     return (os.environ.get("SITE_URL") or request.url_root).strip().rstrip("/")
 
 
+# Our own CSS/JS files get ?v=<hash of the file> added to their links, so a changed file always gets a new
+# URL. That makes it safe to let browsers keep static files for a long time (see static_cache below).
+_ASSET_RE = re.compile(r'(/static/(?:css|js)/(?!vendor/)[A-Za-z0-9_./-]+\.(?:css|js))(?:\?v=[^"\'\s>]*)?(?=["\'])')
+_ASSET_VER = {}  # path -> (mtime_ns, version)
+
+
+def _asset_version(path):
+    f = BASE / path.lstrip("/")
+    try:
+        mt = f.stat().st_mtime_ns
+    except OSError:
+        return "0"
+    hit = _ASSET_VER.get(path)
+    if not hit or hit[0] != mt:
+        hit = (mt, hashlib.md5(f.read_bytes()).hexdigest()[:10])
+        _ASSET_VER[path] = hit
+    return hit[1]
+
+
+def version_assets(body):
+    return _ASSET_RE.sub(lambda m: "%s?v=%s" % (m.group(1), _asset_version(m.group(1))), body)
+
+
 def page_response(body, status=200, cache="public, max-age=300"):
-    resp = Response(body.replace("__SITE_URL__", site_url()), status=status, mimetype="text/html")
+    body = version_assets(body.replace("__SITE_URL__", site_url()))
+    resp = Response(body, status=status, mimetype="text/html")
     resp.headers["Cache-Control"] = cache
     return resp
 
@@ -107,6 +132,18 @@ def security_headers(resp):
     h.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
     if request.is_secure:
         h.setdefault("Strict-Transport-Security", "max-age=31536000")
+    return resp
+
+
+@app.after_request
+def static_cache(resp):
+    """Long browser caching for static files that never change under the same URL."""
+    p = request.path
+    if p.startswith("/static/") and resp.status_code in (200, 304):
+        if p.startswith(("/static/fonts/", "/static/js/vendor/")) or request.args.get("v"):
+            resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        elif p.startswith("/static/img/"):
+            resp.headers["Cache-Control"] = "public, max-age=2592000"
     return resp
 
 

@@ -574,3 +574,15 @@ img, svg { max-width: 100%; }
   .cc-table-wrap { max-height: none; overflow-y: visible; overflow-x: auto; }
   .side-links { max-height: none; overflow-y: visible; }
 }
+
+/* ---------- Touch targets: links and buttons big enough to tap on phones and tablets ---------- */
+@media (max-width: 991.98px), (pointer: coarse) {
+  .site-header .nav-link { display: flex; align-items: center; min-height: 44px; }
+  .tools-menu .dropdown-item { min-height: 44px; }
+  .breadcrumb a { display: inline-block; padding: .5rem .25rem; }
+  .side-links li a { display: flex; align-items: center; min-height: 44px; }
+  .footer-links li { margin-bottom: 0; }
+  .footer-links a { display: inline-flex; align-items: center; min-height: 44px; }
+  .footer-contact br { display: none; }
+  .footer-contact a { display: flex; align-items: center; gap: .4rem; width: fit-content; min-height: 44px; }
+}
