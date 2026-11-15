@@ -9,8 +9,8 @@
  {
   "slug": "instagram-caption-bio-generator",
   "name": "Instagram Caption & Bio Generator",
-  "title": "Instagram Bio & Caption Generator - Fonts",
-  "description": "Free Instagram bio and caption generator with fancy fonts and a live character counter. Copy ideas to Instagram, TikTok or X. No signup needed.",
+  "title": "Instagram Bio Generator - Fancy Fonts & Captions",
+  "description": "Free Instagram bio generator with fancy fonts, caption ideas and a live character counter. Copy to Instagram, TikTok or X. No signup needed.",
   "keywords": "instagram bio caption fonts"
  },
  {
@@ -23,8 +23,8 @@
  {
   "slug": "engagement-rate-calculator",
   "name": "Engagement Rate Calculator",
-  "title": "Engagement Rate Calculator for Social Media",
-  "description": "Calculate engagement rate and video retention for Instagram, TikTok and YouTube. See the formula behind every result. Free, no signup.",
+  "title": "Instagram & TikTok Engagement Rate Calculator",
+  "description": "Free engagement rate calculator for Instagram, TikTok and YouTube, with video retention. See the formula behind every result. No signup.",
   "keywords": "engagement rate retention likes comments"
  },
  {
@@ -44,7 +44,7 @@
  {
   "slug": "color-picker",
   "name": "Color Picker",
-  "title": "Color Picker - HEX, RGB & HSL Color Code Finder",
+  "title": "Color Picker - HEX, RGB & HSL Codes from Image",
   "description": "Free color picker: find HEX, RGB and HSL codes, pick colors from an image and build palettes. Works in your browser, no signup.",
   "keywords": "color hex rgb hsl palette"
  },
@@ -72,7 +72,7 @@
  {
   "slug": "age-calculator",
   "name": "Age Calculator",
-  "title": "Age Calculator - Exact Age in Years, Months & Days",
+  "title": "Age Calculator - Years, Months & Days",
   "description": "Free age calculator: find your exact age in years, months, days, hours and minutes, or the gap between two dates. No signup.",
   "keywords": "age date birthday days"
  },
@@ -93,21 +93,21 @@
  {
   "slug": "bmi-calculator",
   "name": "BMI Calculator",
-  "title": "BMI Calculator - Check BMI & Healthy Weight Range",
+  "title": "BMI Calculator - WHO & South Asian Cut-offs",
   "description": "Free BMI calculator in metric or imperial. See your BMI category, WHO or South Asian cut-offs and your healthy weight range. No signup.",
   "keywords": "bmi weight height health"
  },
  {
   "slug": "background-remover",
   "name": "Background Remover",
-  "title": "Background Remover - Transparent Image Free",
-  "description": "Remove image backgrounds for free and download a transparent PNG. automatic cutout for people, one click for plain backgrounds. Photos stay on your device.",
+  "title": "Remove Background from Image - Transparent PNG",
+  "description": "Remove image backgrounds for free and download a transparent PNG. Automatic cutout for people, one click for plain backgrounds. Photos stay on your device.",
   "keywords": "remove background transparent png"
  },
  {
   "slug": "resume-maker",
   "name": "Resume Maker",
-  "title": "Free Resume Maker - Build & Download CV as PDF",
+  "title": "Free Resume Maker - No Watermark, Download PDF",
   "description": "Build a professional resume or CV in minutes with templates and accent colors, then save it as PDF. Free, no signup, no watermark.",
   "keywords": "resume cv builder pdf"
  },
@@ -121,8 +121,8 @@
  {
   "slug": "video-resizer",
   "name": "Video Resizer",
-  "title": "Video Resizer - Change Size for TikTok & YouTube",
-  "description": "Resize a video to 1080p, 720p, 480p or a TikTok, Reels and Shorts shape. Choose bars, crop or stretch. Free and private: nothing is uploaded.",
+  "title": "Resize Video for Instagram Reels, TikTok & Shorts",
+  "description": "Resize video for Instagram Reels, TikTok and Shorts, or to 1080p, 720p or 480p. Choose bars, crop or stretch. Free, and nothing is uploaded.",
   "keywords": "resize video size tiktok reels youtube 1080p 720p"
  },
  {
