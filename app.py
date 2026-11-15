@@ -274,7 +274,7 @@ def deliver(name, email, message):
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
-    if request.method == "GET":
+    if request.method in ("GET", "HEAD"):
         return render_contact()
     origin = request.headers.get("Origin")
     if origin and urlparse(origin).netloc != request.host:
