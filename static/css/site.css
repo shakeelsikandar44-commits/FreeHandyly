@@ -161,9 +161,12 @@ img, svg { max-width: 100%; }
 .slider-btn:hover { transform: translateY(-50%) scale(1.1); background: #fff; }
 .slider-btn.prev { left: 14px; } .slider-btn.next { right: 14px; }
 .slider.single .slider-btn, .slider.single .slider-dots { display: none; }
-.slider-dots { position: absolute; left: 0; right: 0; bottom: 14px; z-index: 5; display: flex; justify-content: center; gap: 8px; }
-.dot { width: 9px; height: 9px; border-radius: 99px; border: 0; padding: 0; background: rgba(255, 255, 255, .5); cursor: pointer; transition: width .3s var(--ease), background .2s; }
-.dot.on { width: 30px; background: #fff; }
+.slider-dots { position: absolute; left: 0; right: 0; bottom: 6px; z-index: 5; display: flex; justify-content: center; gap: 0; }
+/* The button is a 24px tap area; the small visible dot is drawn by ::before */
+.dot { position: relative; width: 24px; height: 24px; border: 0; padding: 0; background: transparent; cursor: pointer; transition: width .3s var(--ease); }
+.dot::before { content: ""; position: absolute; top: 50%; left: 50%; width: 9px; height: 9px; border-radius: 99px; background: rgba(255, 255, 255, .5); transform: translate(-50%, -50%); transition: width .3s var(--ease), background .2s; }
+.dot.on { width: 45px; }
+.dot.on::before { width: 30px; background: #fff; }
 @media (max-width: 767.98px) {
   .slide { grid-template-columns: 1fr; text-align: left; padding-bottom: 3.4rem; min-height: 0; }
   .slide-art { display: none; }
