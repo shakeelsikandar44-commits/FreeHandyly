@@ -9,7 +9,7 @@
 
   var SAMPLE = {
     tpl: 'modern', accent: '#0A63E8', size: 'normal', showPhoto: true, photo: '',
-    first: 'Ana', last: 'Smith', jd: '', title: 'Digital Marketing Manager', email: 'hello@example.com', phone: '+1 000 000 0000',
+    first: 'Ana', last: 'Smith', jd: '', skillsAuto: true, summaryAuto: true, titleAuto: true, title: 'Digital Marketing Manager', email: 'hello@example.com', phone: '+1 000 000 0000',
     location: 'Chicago, IL', link1: 'linkedin.com/in/anasmith', link2: '',
     summary: 'Results-driven marketing manager with 6+ years of experience growing brands through SEO, paid media and content strategy. Skilled at turning data into clear campaigns that increase traffic, leads and revenue.',
     exp: [
@@ -114,7 +114,7 @@
   /* ------------------------------------------------------------ form bind */
   function changed() { render(); save(); }
   Array.prototype.forEach.call(document.querySelectorAll('[data-bind]'), function (inp) {
-    inp.addEventListener('input', function () { var k = inp.getAttribute('data-bind'); state[k] = inp.value; if (k === 'title' || k === 'summary') { state[k + 'Auto'] = false; } changed(); });
+    inp.addEventListener('input', function () { var k = inp.getAttribute('data-bind'); state[k] = inp.value; if (k === 'title' || k === 'summary' || k === 'skills') { state[k + 'Auto'] = false; } changed(); });
   });
   function fillForm() {
     Array.prototype.forEach.call(document.querySelectorAll('[data-bind]'), function (inp) { inp.value = state[inp.getAttribute('data-bind')] || ''; });
