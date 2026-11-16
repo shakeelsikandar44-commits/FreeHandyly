@@ -93,3 +93,13 @@
 
 /* text areas grow with their content (still resizable by hand) */
 .rs textarea.form-control, .rs-card textarea.form-control { resize: vertical; overflow: hidden; min-height: 4.2rem; line-height: 1.45; }
+
+/* ----- ATS tailor ----- */
+.rs-score { margin-top: .7rem; font-weight: 800; font-family: var(--font-display); font-size: 1.05rem; }
+.rs-score b { font-size: 1.35rem; }
+.rs-score .ok { color: #15803D; } .rs-score .low { color: #B45309; }
+.rs-miss { display: flex; flex-wrap: wrap; gap: 4px; margin-top: .4rem; }
+.rs-miss span { background: #FDECEA; color: #B03A2E; border-radius: 999px; padding: 1px 9px; font-size: .78rem; }
+.rs-card input[type="month"] { min-height: 34px; }
+.rs-cur { display: flex; align-items: center; gap: .4rem; font-size: .85rem; }
+.rs-cur input { width: auto; }
