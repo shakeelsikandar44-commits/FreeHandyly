@@ -150,7 +150,7 @@
       <div class="rs-body">
         <label class="form-label small mb-1" for="rs-jd">Job description</label>
         <textarea id="rs-jd" class="form-control mb-2" data-bind="jd" rows="7" maxlength="12000" placeholder="Paste the full job description here. Fill your details below, then press the button."></textarea>
-        <button type="button" class="btn btn-ink btn-sm" id="rs-tailor">Make my resume ATS friendly</button>
+        <button type="button" class="btn btn-ink btn-sm" id="rs-tailor">Make My Resume</button>
         <div class="rs-score" id="rs-score" hidden aria-live="polite"></div>
         <div class="rs-miss" id="rs-miss"></div>
         <p class="credit mt-2 mb-0">The score is the share of the top 20 job-description keywords that appear in your resume. Keep only the skills and duties that are true for you, and edit anything the tool added.</p>
@@ -247,7 +247,7 @@
   <h2>Fill in the form, watch the page build</h2>
   <p>On one side is the form and on the other is your resume, updating as you type. Enter your details, a short summary, jobs, education, skills and languages, and add a section of your own for things like certifications or volunteering. Choose one of three designs (Modern, Classic or Minimal), pick an accent colour and set the text size. The Load example button fills the form with sample content so you can see what a finished page looks like before you replace it with your own.</p>
   <h2>Match your resume to a job description</h2>
-  <p>Paste the job description into the ATS box, fill in your name, email, phone, employers and education, then press Make my resume ATS friendly. The tool finds the keywords that matter in the advert, adds the ones missing from your skills, fills thin job entries with matching achievement lines and shows a keyword match score that updates as you edit. Applicant tracking systems look for these words, so keep only the skills and duties that are true for you.</p>
+  <p>Paste the job description into the ATS box, fill in your name, email, phone, employers and education, then press Make My Resume. The tool finds the keywords that matter in the advert, adds the ones missing from your skills, fills thin job entries with matching achievement lines and shows a keyword match score that updates as you edit. Applicant tracking systems look for these words, so keep only the skills and duties that are true for you.</p>
   <h2>Getting a PDF</h2>
   <p>The Download PDF button opens your browser&#39;s print window. Choose Save as PDF as the destination, keep margins on Default, and tick Background graphics so that the accent colours show up. The result is a normal PDF with selectable text, which is what employers and applicant tracking systems expect. If anything spills onto a second page, shorten a section or use the Small text size, which usually brings it back to one page.</p>
   <h2>Where your data is kept</h2>
@@ -324,6 +324,7 @@
   <script src="/static/js/site.js"></script>
   
 <script src="/static/js/helpers.js"></script>
+<script src="/static/js/tools/resume-tailor.js"></script>
 <script src="/static/js/tools/resume-maker.js?v=20261113d"></script>
 
 </body>

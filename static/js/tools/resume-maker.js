@@ -13,9 +13,9 @@
     location: 'Chicago, IL', link1: 'linkedin.com/in/anasmith', link2: '',
     summary: 'Results-driven marketing manager with 6+ years of experience growing brands through SEO, paid media and content strategy. Skilled at turning data into clear campaigns that increase traffic, leads and revenue.',
     exp: [
-      { role: 'Digital Marketing Manager', company: 'BrightPath Agency', place: 'Chicago, IL', start: '2021-03', end: '', current: true,
+      { role: 'Digital Marketing Manager', company: 'BrightPath Agency', place: 'Chicago, IL', start: '2021-03', end: '', current: true, autoT: true, autoB: true,
         bullets: 'Led a team of 5 to manage campaigns for 20+ clients\nIncreased organic traffic by 120% in 12 months through SEO and content\nReduced cost per lead by 28% by optimising paid campaigns' },
-      { role: 'Marketing Executive', company: 'Nova Retail', place: 'Austin, TX', start: '2018-06', end: '2021-02', current: false,
+      { role: 'Marketing Executive', company: 'Nova Retail', place: 'Austin, TX', start: '2018-06', end: '2021-02', current: false, autoT: true, autoB: true,
         bullets: 'Planned and ran social media campaigns reaching 500K+ people\nCreated weekly email newsletters with a 32% average open rate' }
     ],
     edu: [{ degree: 'BBA in Marketing', school: 'State University', place: 'Chicago, IL', start: '2014-09', end: '2018-06', details: 'First class honours. President of the marketing society.' }],
@@ -25,7 +25,7 @@
   };
   var LISTS = {
     exp: { el: 'rs-exp', label: 'Position', blank: { role: '', company: '', place: '', start: '', end: '', current: false, bullets: '' },
-           fields: [['role', 'Job title'], ['company', 'Company / employer'], ['place', 'Location'], ['start', 'Start (month / year)', 'month'], ['end', 'End (month / year)', 'month'], ['current', 'I currently work here', 'check'], ['bullets', 'Duties / achievements, one per line (leave empty to fill from the job description)', 'textarea']] },
+           fields: [['role', 'Job title (optional: filled from the job description)'], ['company', 'Company / employer'], ['place', 'Location'], ['start', 'Start (month / year)', 'month'], ['end', 'End (month / year)', 'month'], ['current', 'I currently work here', 'check'], ['bullets', 'Responsibilities, one per line (optional: filled from the job description)', 'textarea']] },
     edu: { el: 'rs-edu', label: 'Education', blank: { degree: '', school: '', place: '', start: '', end: '', details: '' },
            fields: [['degree', 'Degree or course'], ['school', 'School or university'], ['place', 'Location'], ['start', 'Start (month / year)', 'month'], ['end', 'End (month / year)', 'month'], ['details', 'Details (optional)', 'textarea']] },
     extra: { el: 'rs-extra', label: 'Item', blank: { title: '', sub: '', desc: '' },
@@ -114,7 +114,7 @@
   /* ------------------------------------------------------------ form bind */
   function changed() { render(); save(); }
   Array.prototype.forEach.call(document.querySelectorAll('[data-bind]'), function (inp) {
-    inp.addEventListener('input', function () { state[inp.getAttribute('data-bind')] = inp.value; changed(); });
+    inp.addEventListener('input', function () { var k = inp.getAttribute('data-bind'); state[k] = inp.value; if (k === 'title' || k === 'summary') { state[k + 'Auto'] = false; } changed(); });
   });
   function fillForm() {
     Array.prototype.forEach.call(document.querySelectorAll('[data-bind]'), function (inp) { inp.value = state[inp.getAttribute('data-bind')] || ''; });
@@ -154,7 +154,7 @@
         var lab = el('label', 'form-label small mb-1', f[1]); lab.setAttribute('for', id);
         var inp = f[2] === 'textarea' ? el('textarea', 'form-control') : el('input', 'form-control'); inp.id = id; if (f[2] === 'textarea') { inp.rows = 4; } else { inp.type = f[2] === 'month' ? 'month' : 'text'; }
         if (f[2] !== 'month') { inp.maxLength = f[2] === 'textarea' ? 3000 : 80; } inp.value = item[f[0]] || '';
-        inp.addEventListener('input', function () { item[f[0]] = inp.value; changed(); });
+        inp.addEventListener('input', function () { item[f[0]] = inp.value; if (f[0] === 'role') { item.autoT = false; } if (f[0] === 'bullets') { item.autoB = false; } changed(); });
         wrap.appendChild(lab); wrap.appendChild(inp); grid.appendChild(wrap);
       });
       card.appendChild(grid); host.appendChild(card);
@@ -225,52 +225,17 @@
 
 
   /* ------------------------------------------------------------ ATS tailor */
-  var STOP = new Set('a about above after all also an and any are as at be been being but by can could do does for from had has have he her his how i if in into is it its may more most must of on or our out over per should so such than that the their them then there these they this those to under up us use using was we were what when where which while who will with within would you your able etc including include ability work working role team experience years year strong skills skill required requirements preferred responsibilities job position candidate company looking plus new well hiring join apply benefits salary equal opportunity employer'.split(' '));
   var KW = [];
-  function cap(s) { return s.replace(/\b\w/g, function (c) { return c.toUpperCase(); }); }
-  function keywords(jd) {
-    var w = (jd.toLowerCase().match(/[a-z][a-z0-9+#.\-\/]*[a-z0-9+#]|[a-z]/g) || []).map(function (x) { return x.replace(/[.\-\/]+$/, ''); }), f = {};
-    w.forEach(function (x, i) {
-      if (x.length < 2 || STOP.has(x)) { return; }
-      f[x] = (f[x] || 0) + 1;
-      var n = w[i + 1]; if (n && n.length > 1 && !STOP.has(n)) { f[x + ' ' + n] = (f[x + ' ' + n] || 0) + 1.2; }
-    });
-    var arr = Object.keys(f).filter(function (k) { return k.indexOf(' ') > -1 ? f[k] >= 2.4 : f[k] >= 1; }).sort(function (a, b) { return f[b] - f[a]; }), out = [];
-    for (var i = 0; i < arr.length && out.length < 20; i++) {
-      var k = arr[i]; if (out.some(function (o) { return o.indexOf(k) > -1 || k.indexOf(o) > -1; })) { continue; } out.push(k);
-    }
-    return out;
-  }
-  function jdLines(jd) {
-    return jd.split(/\n+|(?<=[.;])\s+/).map(function (s) { return s.replace(/^[\s\-\u2022*\u00b7\d.)]+/, '').trim(); })
-      .filter(function (s) { return s.length > 35 && s.length < 170 && !/^(we|you|our|the|this|a|an|strong|must|required)\b/i.test(s); });
-  }
-  function resumeText() { return ' ' + paper.textContent.toLowerCase() + ' '; }
   function updateScore() {
     var box = $('rs-score'), miss = $('rs-miss'); if (!KW.length) { box.hidden = true; miss.textContent = ''; return; }
-    var t = resumeText(), hit = KW.filter(function (k) { return t.indexOf(k) > -1; }), pct = Math.round(hit.length / KW.length * 100);
+    var t = ' ' + paper.textContent.toLowerCase() + ' ', hit = KW.filter(function (k) { return t.indexOf(k) > -1; }), pct = Math.round(hit.length / KW.length * 100);
     box.hidden = false; box.innerHTML = 'ATS keyword match: <b class="' + (pct >= 90 ? 'ok' : 'low') + '">' + pct + '%</b> (' + hit.length + '/' + KW.length + ' keywords)';
     miss.textContent = ''; KW.filter(function (k) { return t.indexOf(k) < 0; }).forEach(function (k) { miss.appendChild(el('span', '', k)); });
   }
   var _render = render; render = function () { _render(); updateScore(); };
   $('rs-tailor').addEventListener('click', function () {
-    var jd = (state.jd || '').trim();
-    if (jd.length < 50) { window.alert('Please paste the full job description first.'); $('rs-jd').focus(); return; }
-    KW = keywords(jd);
-    var own = items(state.skills), have = own.map(function (s) { return s.toLowerCase(); });
-    KW.forEach(function (k) { if (have.indexOf(k) < 0) { own.push(cap(k)); have.push(k); } });
-    state.skills = own.join(', ');
-    var m = /(?:hiring|seeking|looking for)\s+(?:an?\s+)?([A-Z][A-Za-z\/&\- ]{3,50}?)(?:\s+to\b|\s+for\b|\.|,|\n)/.exec(jd);
-    if (!state.title && m) { state.title = m[1].trim(); }
-    var pool = jdLines(jd), pi = 0;
-    state.exp.filter(filled).forEach(function (x) {
-      var b = bullets(x.bullets); while (b.length < 3 && pool.length) { b.push(pool[pi % pool.length].replace(/\.$/, '')); pi++; if (pi >= pool.length * 2) { break; } }
-      x.bullets = b.filter(function (v, i) { return b.indexOf(v) === i; }).join('\n');
-    });
-    if (!String(state.summary || '').trim()) {
-      state.summary = 'Results-driven ' + (state.title || 'professional') + ' with hands-on experience in ' + own.slice(0, 5).join(', ') + '. Known for accurate, timely work and for supporting team goals in fast-paced environments.';
-    }
-    fillForm(); render(); save();
+    if ((state.jd || '').trim().length < 50) { window.alert('Please paste the full job description first.'); $('rs-jd').focus(); return; }
+    KW = window.FHTailor.apply(state); fillForm(); render(); save();
     $('rs-score').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   });
 
