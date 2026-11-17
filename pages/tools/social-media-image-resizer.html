@@ -148,13 +148,20 @@
   <div class="col-6 col-md-3"><label for="rs-w" class="form-label fw-semibold">Width (px)</label><input id="rs-w" class="form-control" type="number" min="16" max="8000" value="1280" inputmode="numeric"></div>
   <div class="col-6 col-md-3"><label for="rs-h" class="form-label fw-semibold">Height (px)</label><input id="rs-h" class="form-control" type="number" min="16" max="8000" value="720" inputmode="numeric"></div>
   <div class="col-md-4"><label for="rs-fit" class="form-label fw-semibold">Fit mode</label>
-    <select id="rs-fit" class="form-select"><option value="cover">Fill and crop</option><option value="contain">Fit inside (add background)</option><option value="stretch">Stretch</option></select></div>
+    <select id="rs-fit" class="form-select"><option value="contain">Fit inside (no crop, add background)</option><option value="blur">Fit inside + blurred background</option><option value="manual">Manual crop (drag the box)</option><option value="cover">Fill and crop</option><option value="stretch">Stretch</option></select></div>
   <div class="col-6 col-md-2"><label for="rs-bg" class="form-label fw-semibold">Background</label><input id="rs-bg" class="form-control form-control-color w-100" type="color" value="#ffffff"></div>
   <div class="col-6 col-md-3"><label for="rs-fx" class="form-label fw-semibold">Horizontal position</label><input id="rs-fx" class="form-range" type="range" min="0" max="100" value="50"></div>
   <div class="col-6 col-md-3"><label for="rs-fy" class="form-label fw-semibold">Vertical position</label><input id="rs-fy" class="form-range" type="range" min="0" max="100" value="50"></div>
   <div class="col-md-4"><label for="rs-format" class="form-label fw-semibold">Format</label>
     <select id="rs-format" class="form-select"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div>
   <div class="col-md-4"><label for="rs-quality" class="form-label fw-semibold">Quality (JPG / WebP): <span id="rs-quality-val">90</span>%</label><input id="rs-quality" class="form-range" type="range" min="40" max="100" value="90"></div>
+</div>
+
+<div class="mt-3" id="rs-crop-wrap" hidden>
+  <p class="status-line">Drag the box to choose the part to keep. Use the slider to make the box bigger or smaller.</p>
+  <div class="rs-stage" id="rs-stage"><img id="rs-cimg" alt="Source image for cropping" draggable="false"><div id="rs-cbox" aria-label="Crop box"></div></div>
+  <label for="rs-zoom" class="form-label fw-semibold mt-2">Crop box size</label>
+  <input id="rs-zoom" class="form-range" type="range" min="10" max="100" value="100">
 </div>
 
 <div class="mt-3">
