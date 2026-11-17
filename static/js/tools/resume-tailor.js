@@ -139,7 +139,7 @@
       for (var q = 0; q < tries.length; q++) {
         var tr = tries[q];
         pick = s1 + (g.length ? ' Hands-on background in ' + list(g.slice(0, tr[0])) + '.' : '') + s3 + (tr[1] && g.length > 3 ? ' Also experienced in ' + list(g.slice(3, 5)) + '.' : '') + tr[2];
-        if (words(pick) <= 82) { break; }
+        if (words(pick) <= 95) { break; }
       }
       st.summary = pick;
       st.summaryAuto = true;
