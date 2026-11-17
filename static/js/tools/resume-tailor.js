@@ -129,9 +129,19 @@
     });
     if (!st.title || st.titleAuto) { st.title = tt; st.titleAuto = true; }
     if (!String(st.summary || '').trim() || st.summaryAuto) {
-      var y = years(ex), g = pool.slice(0, 2).map(function (l, k) { var r = rewrite(l, 'ing').split(/\s(?:to|for|so)\s/)[0]; return k ? r.split(/\sand\s/)[0] : r; }), rest = sk.slice(3, 6).map(slotText);
-      st.summary = tt + (y >= 1 ? ' with ' + y + '+ years of experience' : ' with hands-on experience') + (sk.length ? ' in ' + list(sk.slice(0, 3).map(slotText)) : '') + '.' +
-        (g.length ? ' Hands-on background in ' + g.join(' and ') + '.' : '') + (rest.length ? ' Comfortable with ' + list(rest) + ', and committed to accurate, on-time work.' : ' Committed to accurate, on-time work.');
+      var y = years(ex), words = function (s) { return s.split(/\s+/).length; };
+      var cut = function (l) { var r = rewrite(l, 'ing'); if (!r) { return null; } r = r.split(/,?\s(?:to|for|so|including)\s|\s\(/)[0]; return r.length > 90 ? r.slice(0, 90).replace(/\s\S*$/, '') : r; };
+      var g = pool.filter(function (l) { return !/^apply working knowledge/i.test(l); }).slice(0, 5).map(cut).filter(Boolean), rest = sk.slice(3).map(slotText), h = Math.ceil(rest.length / 2);
+      var s1 = tt + (y >= 1 ? ' with ' + y + '+ years of experience' : ' with hands-on experience') + (sk.length ? ' in ' + list(sk.slice(0, 3).map(slotText)) : '') + '.';
+      var s3 = rest.length ? ' Working knowledge of ' + list(rest.slice(0, h)) + (rest.length > h ? ', along with ' + list(rest.slice(h)) : '') + '.' : '';
+      var L5 = ' Known for accurate, on-time work, clear communication across departments and a steady focus on meeting team goals.', S5 = ' Known for accurate, on-time work and clear communication across departments.';
+      var tries = [[3, 1, L5], [3, 0, L5], [3, 0, S5], [2, 0, S5], [1, 0, S5]], pick = '';
+      for (var q = 0; q < tries.length; q++) {
+        var tr = tries[q];
+        pick = s1 + (g.length ? ' Hands-on background in ' + list(g.slice(0, tr[0])) + '.' : '') + s3 + (tr[1] && g.length > 3 ? ' Also experienced in ' + list(g.slice(3, 5)) + '.' : '') + tr[2];
+        if (words(pick) <= 82) { break; }
+      }
+      st.summary = pick;
       st.summaryAuto = true;
     }
     return KW;
