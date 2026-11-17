@@ -146,10 +146,14 @@
     </div>
 
     <details class="rs-sec" open id="rs-ats">
-      <summary>ATS tailor: paste the job description</summary>
+      <summary>ATS tailor: add the job details</summary>
       <div class="rs-body">
-        <label class="form-label small mb-1" for="rs-jd">Job description</label>
-        <textarea id="rs-jd" class="form-control mb-2" data-bind="jd" rows="7" maxlength="12000" placeholder="Paste the full job description here. Fill your details below, then press the button."></textarea>
+        <label class="form-label small mb-1" for="rs-jd-title">Job title</label>
+        <input id="rs-jd-title" class="form-control mb-2" data-bind="jdTitle" maxlength="80" placeholder="e.g. Medical Billing Specialist">
+        <label class="form-label small mb-1" for="rs-jd-main">Job requirements <span class="text-muted">(About the Job, Qualifications, What you'll do, What you'll bring)</span></label>
+        <textarea id="rs-jd-main" class="form-control mb-2" data-bind="jdMain" rows="6" maxlength="9000" placeholder="Paste the main part of the job advert here: the duties and the required qualifications."></textarea>
+        <label class="form-label small mb-1" for="rs-jd-pref">Preferred <span class="text-muted">(Preferred Qualifications, Preferred, You should have)</span></label>
+        <textarea id="rs-jd-pref" class="form-control mb-2" data-bind="jdPref" rows="4" maxlength="4000" placeholder="Optional: paste the nice-to-have skills and qualifications here."></textarea>
         <button type="button" class="btn btn-ink btn-sm" id="rs-tailor">Make My Resume</button>
         <div class="rs-score" id="rs-score" hidden aria-live="polite"></div>
         <div class="rs-miss" id="rs-miss"></div>
@@ -247,7 +251,7 @@
   <h2>Fill in the form, watch the page build</h2>
   <p>On one side is the form and on the other is your resume, updating as you type. Enter your details, a short summary, jobs, education, skills and languages, and add a section of your own for things like certifications or volunteering. Choose one of three designs (Modern, Classic or Minimal), pick an accent colour and set the text size. The Load example button fills the form with sample content so you can see what a finished page looks like before you replace it with your own.</p>
   <h2>Match your resume to a job description</h2>
-  <p>Paste the job description into the ATS box, fill in your name, email, phone, employers and education, then press Make My Resume. The tool finds the keywords that matter in the advert, adds the ones missing from your skills, fills thin job entries with matching achievement lines and shows a keyword match score that updates as you edit. Applicant tracking systems look for these words, so keep only the skills and duties that are true for you.</p>
+  <p>Add the job title, the job requirements and any preferred qualifications in the ATS box, fill in your name, email, phone, employers and education, then press Make My Resume. The tool finds the keywords that matter in the advert, adds the ones missing from your skills, fills thin job entries with matching achievement lines and shows a keyword match score that updates as you edit. Applicant tracking systems look for these words, so keep only the skills and duties that are true for you.</p>
   <h2>Getting a PDF</h2>
   <p>The Download PDF button opens your browser&#39;s print window. Choose Save as PDF as the destination, keep margins on Default, and tick Background graphics so that the accent colours show up. The result is a normal PDF with selectable text, which is what employers and applicant tracking systems expect. If anything spills onto a second page, shorten a section or use the Small text size, which usually brings it back to one page.</p>
   <h2>Where your data is kept</h2>

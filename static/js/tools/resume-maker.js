@@ -9,7 +9,7 @@
 
   var SAMPLE = {
     tpl: 'modern', accent: '#0A63E8', size: 'normal', showPhoto: true, photo: '',
-    first: 'Ana', last: 'Smith', jd: '', skillsAuto: true, summaryAuto: true, titleAuto: true, title: 'Digital Marketing Manager', email: 'hello@example.com', phone: '+1 000 000 0000',
+    first: 'Ana', last: 'Smith', jd: '', jdTitle: '', jdMain: '', jdPref: '', skillsAuto: true, summaryAuto: true, titleAuto: true, title: 'Digital Marketing Manager', email: 'hello@example.com', phone: '+1 000 000 0000',
     location: 'Chicago, IL', link1: 'linkedin.com/in/anasmith', link2: '',
     summary: 'Results-driven marketing manager with 6+ years of experience growing brands through SEO, paid media and content strategy. Skilled at turning data into clear campaigns that increase traffic, leads and revenue.',
     exp: [
@@ -36,7 +36,7 @@
   function fullName() { return [state.first, state.last].filter(Boolean).join(' ').trim() || state.name || ''; }
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function loadState() {
-    try { var s = localStorage.getItem(KEY); if (s) { var o = JSON.parse(s); if (o.name && !o.first && !o.last) { var pr = String(o.name).trim().split(/\s+/); o.first = pr.shift() || ''; o.last = pr.join(' '); } return Object.assign(clone(SAMPLE), o); } } catch (e) { /* ignore */ }
+    try { var s = localStorage.getItem(KEY); if (s) { var o = JSON.parse(s); if (o.name && !o.first && !o.last) { var pr = String(o.name).trim().split(/\s+/); o.first = pr.shift() || ''; o.last = pr.join(' '); } if (o.jd && !o.jdMain && !o.jdPref) { o.jdMain = o.jd; } return Object.assign(clone(SAMPLE), o); } } catch (e) { /* ignore */ }
     return clone(SAMPLE);
   }
   var saveT;
@@ -184,7 +184,7 @@
   });
   $('rs-clear').addEventListener('click', function () {
     if (!window.confirm('Clear everything you typed? This also removes the copy saved in this browser.')) { return; }
-    state = { tpl: state.tpl, accent: state.accent, size: state.size, showPhoto: true, photo: '', first: '', last: '', jd: '', title: '', email: '', phone: '', location: '', link1: '', link2: '', summary: '',
+    state = { tpl: state.tpl, accent: state.accent, size: state.size, showPhoto: true, photo: '', first: '', last: '', jd: '', jdTitle: '', jdMain: '', jdPref: '', title: '', email: '', phone: '', location: '', link1: '', link2: '', summary: '',
               exp: [clone(LISTS.exp.blank)], edu: [clone(LISTS.edu.blank)], skills: '', langs: '', extraTitle: 'Certifications', extra: [] };
     try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
     fillForm(); render();
@@ -234,7 +234,9 @@
   }
   var _render = render; render = function () { _render(); updateScore(); };
   $('rs-tailor').addEventListener('click', function () {
-    if ((state.jd || '').trim().length < 50) { window.alert('Please paste the full job description first.'); $('rs-jd').focus(); return; }
+    var ttl = (state.jdTitle || '').trim(), main = (state.jdMain || '').trim(), pref = (state.jdPref || '').trim();
+    if ((main + ' ' + pref).trim().length < 30) { window.alert('Please add the job requirements first (the duties and qualifications from the job advert).'); $('rs-jd-main').focus(); return; }
+    state.jd = (ttl ? 'Job title: ' + ttl + '\n' : '') + main + '\n' + pref;
     KW = window.FHTailor.apply(state); fillForm(); render(); save();
     $('rs-score').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   });
