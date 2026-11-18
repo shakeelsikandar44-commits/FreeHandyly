@@ -104,8 +104,7 @@ SYSTEM = (
     "4. Across ALL positions together, no two bullets may start with the same word.\n"
     "5. Use present-tense verbs for a position marked present and past-tense verbs for one marked past.\n"
     "6. Work the listed keywords into bullets, summary and skills where they truthfully fit the duty.\n"
-    "7. Role titles: position 1 is the target job title (or the closest natural title). Each older position is a "
-    "realistic step down in seniority in the same field (for example Senior X, X, Associate X).\n"
+    "7. Role titles: position 1 is the target job title (or the closest natural title) without extra setting words such as a clinic or department name. Every older position must be a DIFFERENT, realistic job title that a person in this field would hold on the way to the target, using a different role noun where that is natural (for example Pharmacy Technician, Prior Authorization Specialist, Billing Clerk). Do NOT just add the word Associate, Junior or Senior to the target title, and never repeat the same title.\n"
     "8. Summary: 55 to 80 words, no first person, no clichés, mention years of experience only if a number above 0 is given.\n"
     "9. Skills: 10 to 14 short skills, tools or terms (1 to 4 words each) taken from the advert.\n"
     'Output format: {"summary": "...", "skills": ["..."], "employers": [{"role": "...", "bullets": ["..."]}]} '

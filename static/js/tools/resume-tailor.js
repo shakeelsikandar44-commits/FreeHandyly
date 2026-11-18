@@ -1,7 +1,7 @@
 /* FreeHandyly Resume Maker: builds job titles, bullets, skills and summary from a job description. The built-in writer runs in the browser; the optional AI polish is called from resume-maker.js. */
 (function (w) {
   'use strict';
-  var STOP = new Set('a about above after all also an and any are as at be been being but by can could do does for from had has have he her his how i if in into is it its may more most must of on or our out over per should so such than that the their them then there these they this those to under up us use using was we were what when where which while who will with within would you your able etc including include ability work working role team experience years year strong skills skill required requirements preferred responsibilities job position candidate company looking plus new well hiring join apply benefits salary equal opportunity employer knowledge correctly timely accurate accuracy days questions daily high quality good great excellent duties assigned special projects primary related meet sound departmental goals decision making effectively accountable daily current established ongoing completed correct negative specific measurable between less lag through across around upon whether'.split(' '));
+  var STOP = new Set('a about above after all also an and any are as at be been being but by can could do does for from had has have he her his how i if in into is it its may more most must of on or our out over per should so such than that the their them then there these they this those to under up us use using was we were what when where which while who will with within would you your able etc including include ability work working role team experience years year strong skills skill required requirements preferred responsibilities job position candidate company looking plus new well hiring join apply benefits salary equal opportunity employer knowledge correctly timely accurate accuracy days questions daily high quality good great excellent duties assigned special projects primary related meet sound departmental goals decision making effectively accountable daily current established ongoing completed correct negative specific measurable between less lag through across around upon whether strongly highly directly closely successfully independently accurately efficiently proficiently thoroughly'.split(' '));
   var VERBS = new Set('submit follow review assign post reconcile work verify obtain communicate process prepare manage maintain coordinate monitor ensure analyze analyse develop create support handle resolve track update document schedule audit train lead collaborate perform provide conduct implement generate respond research organize identify assist answer enter file bill code collect negotiate design build write test deploy optimize plan evaluate report record contact investigate escalate reduce improve drive deliver execute oversee mentor apply use keep help flag check prioritize suggest share correct establish promote validate delegate supervise hold demonstrate'.split(' '));
   var AMB = /^(process|support|design|report|record|plan|test|file|bill|code|audit|document|schedule|update|track|research|answer|contact|drive|train|use|work|apply|post|lead|run)$/;
   var IRR = { lead: 'led', run: 'ran', build: 'built', write: 'wrote', make: 'made', hold: 'held', meet: 'met', keep: 'kept', give: 'gave', take: 'took', send: 'sent', get: 'got', do: 'did' };
@@ -92,11 +92,28 @@
     }
     return cap(t.toLowerCase());
   }
+  var NOUN = {
+    director: ['{h} Director', '{h} Manager', '{h} Supervisor', '{h} Specialist'],
+    manager: ['{h} Manager', '{h} Supervisor', '{h} Coordinator', '{h} Specialist'],
+    supervisor: ['{h} Supervisor', 'Senior {h} Specialist', '{h} Specialist', '{h} Coordinator'],
+    lead: ['{h} Lead', 'Senior {h} Specialist', '{h} Specialist', '{h} Coordinator'],
+    coordinator: ['{h} Coordinator', '{h} Specialist', '{h} Technician', '{h} Assistant'],
+    specialist: ['{h} Specialist', '{h} Coordinator', '{h} Representative', '{h} Clerk'],
+    analyst: ['{h} Analyst', '{h} Specialist', '{h} Coordinator', '{h} Assistant'],
+    administrator: ['{h} Administrator', '{h} Coordinator', '{h} Specialist', '{h} Assistant'],
+    technician: ['{h} Technician', '{h} Assistant', '{h} Clerk'],
+    representative: ['{h} Representative', '{h} Specialist', '{h} Assistant', '{h} Clerk'],
+    associate: ['{h} Associate', '{h} Specialist', '{h} Assistant', '{h} Clerk'],
+    assistant: ['{h} Assistant', '{h} Clerk']
+  };
+  var LEVEL = /\b(senior|sr\.?|lead|principal|junior|jr\.?|head of|chief|associate)\b\s*/ig;
   function ladder(t, n) {
-    var lead = LEADT.test(t), base = t.replace(/^(senior|sr\.?|lead|principal|head of|junior|jr\.?|assistant|associate)\s+/i, '').replace(/\s+(supervisor|manager|director|head)$/i, '');
-    if (lead && !/(specialist|analyst|coordinator|associate|representative|clerk)$/i.test(base)) { base += ' Specialist'; }
-    var L = lead ? [t, 'Senior ' + base, base, 'Associate ' + base] : [t, 'Associate ' + base, 'Junior ' + base, 'Assistant ' + base];
-    return L[Math.min(n, L.length - 1)];
+    if (n < 1) { return t; }
+    var w = t.split(/\s+/), k = -1, i;
+    for (i = w.length - 1; i >= 0; i--) { if (NOUN[w[i].toLowerCase()]) { k = i; break; } }
+    if (k < 0) { return 'Junior ' + t.replace(LEVEL, '').trim(); }
+    var h = w.slice(0, k).join(' ').replace(LEVEL, '').trim(), seq = NOUN[w[k].toLowerCase()];
+    return cap(seq[Math.min(n, seq.length - 1)].replace('{h}', h).replace(/\s+/g, ' ').trim());
   }
   function ing(v) { v = v.toLowerCase(); if (/[^e]e$/.test(v)) { return v.slice(0, -1) + 'ing'; } return DBL.test(v) ? v + v.slice(-1) + 'ing' : v + 'ing'; }
   function vb(w) {

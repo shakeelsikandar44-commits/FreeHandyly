@@ -245,13 +245,13 @@
     var ctl = window.AbortController ? new AbortController() : null, timer = setTimeout(function () { if (ctl) { ctl.abort(); } }, 55000);
     btn.disabled = true; btn.textContent = 'Improving with AI...'; note.textContent = '';
     fetch('/api/resume-ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(window.FHTailor.aiPayload(state, KW)), signal: ctl ? ctl.signal : undefined })
-      .then(function (r) { if (!r.ok) { throw new Error('ai ' + r.status); } return r.json(); })
+      .then(function (r) { if (!r.ok) { return r.json().catch(function () { return {}; }).then(function (b) { throw new Error(b.reason || ('HTTP ' + r.status)); }); } return r.json(); })
       .then(function (ai) {
         if (state !== snap) { return; }
         if (window.FHTailor.applyAI(state, ai)) { fillForm(); render(); save(); note.textContent = 'Wording improved with AI. Please read it and edit anything that is not true for you.'; }
         else { note.textContent = 'Built-in writer used. Edit anything that is not true for you.'; }
       })
-      .catch(function () { note.textContent = 'The AI writer is busy, so the built-in writer was used. You can press the button again in a minute.'; })
+      .catch(function (e) { if (window.console) { console.warn('AI writer:', e && e.message); } note.textContent = 'The AI writer is busy, so the built-in writer was used. You can press the button again in a minute.' + (/aidebug/.test(location.search) ? ' [' + (e && e.message) + ']' : ''); })
       .then(function () { clearTimeout(timer); btn.disabled = false; btn.textContent = label; });
   });
 
