@@ -6,7 +6,7 @@ the browser and never logged. Only the job advert text, the job dates and a few 
 no name, contact details, employer names or photo. If anything fails, the page keeps using its built-in writer.
 
 Optional environment variables:
-  GEMINI_MODEL         Gemini model name (default gemini-2.5-flash)
+  GEMINI_MODEL         Gemini model name (default: tries gemini-3.1-flash-lite, then gemini-3-flash-preview)
   OLLAMA_MODEL         model name (default gpt-oss:120b)
   OLLAMA_API_URL       chat endpoint (default https://ollama.com/api/chat)
   OLLAMA_TIMEOUT       seconds to wait for the AI (default 45)
@@ -28,7 +28,7 @@ log = logging.getLogger("freehandyly.resume_ai")
 
 API_URL = "https://ollama.com/api/chat"
 DEFAULT_MODEL = "gpt-oss:120b"
-DEFAULT_GEMINI = "gemini-2.5-flash"
+GEMINI_MODELS = ["gemini-3.1-flash-lite", "gemini-3-flash-preview", "gemini-2.5-flash"]  # tried in order when a name returns 404
 COUNTS = [10, 9, 8]  # bullets for the newest, second and older positions (same as the built-in writer)
 
 
@@ -145,17 +145,26 @@ def _post(req, label):
 
 def _call_gemini(messages):
     key = os.environ.get("GEMINI_API_KEY", "").strip()
-    model = os.environ.get("GEMINI_MODEL") or DEFAULT_GEMINI
     system = "\n".join(m["content"] for m in messages if m["role"] == "system")
     user = "\n".join(m["content"] for m in messages if m["role"] == "user")
     body = json.dumps({"systemInstruction": {"parts": [{"text": system}]},
                        "contents": [{"role": "user", "parts": [{"text": user}]}],
                        "generationConfig": {"temperature": 0.6, "responseMimeType": "application/json"}}).encode("utf-8")
-    url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % urllib.parse.quote(model, safe="")
-    req = urllib.request.Request(url, data=body, method="POST", headers={"x-goog-api-key": key, "Content-Type": "application/json"})
-    data = _post(req, "Gemini")
-    parts = ((((data.get("candidates") or [{}])[0]).get("content") or {}).get("parts")) or []
-    return "".join(str(p.get("text") or "") for p in parts if isinstance(p, dict))
+    forced = os.environ.get("GEMINI_MODEL", "").strip()
+    last = AIUnavailable("Gemini error")
+    for model in ([forced] if forced else GEMINI_MODELS):
+        url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % urllib.parse.quote(model, safe="")
+        req = urllib.request.Request(url, data=body, method="POST", headers={"x-goog-api-key": key, "Content-Type": "application/json"})
+        try:
+            data = _post(req, "Gemini")
+        except AIUnavailable as exc:
+            last = exc
+            if str(exc).endswith("HTTP 404"):  # model name retired or unknown: try the next one
+                continue
+            raise
+        parts = ((((data.get("candidates") or [{}])[0]).get("content") or {}).get("parts")) or []
+        return "".join(str(p.get("text") or "") for p in parts if isinstance(p, dict))
+    raise last
 
 
 def _call_ollama(messages):

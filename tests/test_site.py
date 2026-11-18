@@ -255,3 +255,27 @@ def test_resume_ai_gemini_provider(client, monkeypatch):
     assert seen["key"] == "g-test-key" and "generativelanguage.googleapis.com" in seen["url"] and "key=" not in seen["url"]
     assert seen["body"]["systemInstruction"]["parts"][0]["text"] and "g-test-key" not in _json.dumps(seen["body"])
     resume_ai._HITS.clear()
+
+
+def test_gemini_tries_next_model_on_404(monkeypatch):
+    import io
+    import json as _json
+    import urllib.error
+    import resume_ai
+    monkeypatch.setenv("GEMINI_API_KEY", "g-test-key")
+    monkeypatch.delenv("GEMINI_MODEL", raising=False)
+    calls = []
+
+    class Resp(io.BytesIO):
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def fake_urlopen(req, timeout=0):
+        calls.append(req.full_url)
+        if len(calls) == 1:
+            raise urllib.error.HTTPError(req.full_url, 404, "not found", {}, None)
+        return Resp(_json.dumps({"candidates": [{"content": {"parts": [{"text": "{}"}]}}]}).encode())
+
+    monkeypatch.setattr(resume_ai.urllib.request, "urlopen", fake_urlopen)
+    assert resume_ai._call_gemini([{"role": "system", "content": "s"}, {"role": "user", "content": "u"}]) == "{}"
+    assert len(calls) == 2 and "gemini-3.1-flash-lite" in calls[0] and "gemini-3-flash-preview" in calls[1]
