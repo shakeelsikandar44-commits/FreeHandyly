@@ -178,3 +178,54 @@ def test_removed_youtube_tool_redirects_and_is_gone_from_site(client):
     assert get(client, "/api/youtube-tags").status_code == 404
     assert "youtube-tag-extractor" not in get(client, "/sitemap.xml").get_data(as_text=True)
     assert "youtube-tag-extractor" not in get(client, "/").get_data(as_text=True)
+
+
+def _ai_payload():
+    return {"title": "Medical Billing Specialist", "jd": "Review claims for accuracy and submit them to payers. Follow up on denials and reconcile payments daily.",
+            "keywords": ["claims", "denials"], "years": 3, "employers": [{"current": True, "start": "2023-01", "end": ""}, {"current": False, "start": "2020-01", "end": "2022-12"}]}
+
+
+def test_resume_ai_without_key_is_503_and_validates_input(client, monkeypatch):
+    monkeypatch.delenv("OLLAMA_API_KEY", raising=False)
+    assert client.post("/api/resume-ai", json=_ai_payload()).status_code == 503
+    monkeypatch.setenv("OLLAMA_API_KEY", "test-key")
+    assert client.post("/api/resume-ai", json={"jd": "short", "employers": []}).status_code == 400
+    assert client.post("/api/resume-ai", data="nope").status_code == 400
+    assert client.post("/api/resume-ai", json=_ai_payload(), headers={"Origin": "https://evil.example"}).status_code == 403
+
+
+def test_resume_ai_with_mocked_ollama(client, monkeypatch):
+    import json as _json
+    import resume_ai
+    monkeypatch.setenv("OLLAMA_API_KEY", "test-key")
+    resume_ai._HITS.clear()
+    seen = {}
+
+    def fake(messages):
+        seen["text"] = _json.dumps(messages)
+        return 'Sure! ```json\n' + _json.dumps({
+            "summary": "Medical billing specialist with 3+ years of experience in claims review, payer submissions and denial follow-up for busy practices.",
+            "skills": ["Claims Review", "claims review", "Denials", "Payment Posting"],
+            "employers": [{"role": "Medical Billing Specialist", "bullets": ["Review claims for accuracy before submission to payers", "Submit clean claims to payers within agreed deadlines", "Review again", "Follow up on denials and track appeals to completion daily"]},
+                          {"role": "Associate Medical Billing Specialist", "bullets": ["Reconcile payments against remittances every day", "Submit batches", "Resolve payer questions quickly and document each outcome"]}]}) + "\n```"
+    monkeypatch.setattr(resume_ai, "_call_ollama", fake)
+    r = client.post("/api/resume-ai", json=_ai_payload())
+    assert r.status_code == 200
+    data = r.get_json()
+    assert data["skills"] == ["Claims Review", "Denials", "Payment Posting"]
+    assert len(data["employers"]) == 2
+    firsts = [b.split()[0].lower() for e in data["employers"] for b in e["bullets"]]
+    assert len(firsts) == len(set(firsts))  # no repeated opening word across employers
+    assert "test-key" not in r.get_data(as_text=True) and "test-key" not in seen["text"]
+    assert "<job_advert>" in seen["text"]
+
+
+def test_resume_ai_rate_limit(client, monkeypatch):
+    import resume_ai
+    monkeypatch.setenv("OLLAMA_API_KEY", "test-key")
+    monkeypatch.setenv("RESUME_AI_PER_HOUR", "2")
+    resume_ai._HITS.clear()
+    monkeypatch.setattr(resume_ai, "_call_ollama", lambda m: '{"summary": "' + "x" * 60 + '", "skills": [], "employers": []}')
+    codes = [client.post("/api/resume-ai", json=_ai_payload()).status_code for _ in range(3)]
+    assert codes == [200, 200, 429]
+    resume_ai._HITS.clear()

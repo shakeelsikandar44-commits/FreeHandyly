@@ -1,4 +1,4 @@
-/* FreeHandyly Resume Maker: builds job titles, bullets, skills and summary from a job description. Runs in the browser, no data leaves the device. */
+/* FreeHandyly Resume Maker: builds job titles, bullets, skills and summary from a job description. The built-in writer runs in the browser; the optional AI polish is called from resume-maker.js. */
 (function (w) {
   'use strict';
   var STOP = new Set('a about above after all also an and any are as at be been being but by can could do does for from had has have he her his how i if in into is it its may more most must of on or our out over per should so such than that the their them then there these they this those to under up us use using was we were what when where which while who will with within would you your able etc including include ability work working role team experience years year strong skills skill required requirements preferred responsibilities job position candidate company looking plus new well hiring join apply benefits salary equal opportunity employer knowledge correctly timely accurate accuracy days questions daily high quality good great excellent duties assigned special projects primary related meet sound departmental goals decision making effectively accountable daily current established ongoing completed correct negative specific measurable between less lag through across around upon whether'.split(' '));
@@ -216,5 +216,29 @@
     }
     return KW;
   }
-  w.FHTailor = { apply: apply, keywords: keywords };
+  function aiPayload(st, kw) {
+    var ex = st.exp.filter(function (x) { return x.company || x.start; });
+    return { title: String(st.jdTitle || st.title || '').trim(), jd: st.jd || '', keywords: (kw || []).slice(0, 20), years: years(ex),
+             employers: ex.map(function (x) { return { current: !!x.current, start: x.start || '', end: x.end || '' }; }) };
+  }
+  function applyAI(st, ai) {
+    if (!ai || typeof ai !== 'object') { return false; }
+    var ex = st.exp.filter(function (x) { return x.company || x.start; }), changed = false;
+    (Array.isArray(ai.employers) ? ai.employers : []).forEach(function (e, i) {
+      var x = ex[i]; if (!x || !e) { return; }
+      if (x.autoT === true && e.role) { x.role = String(e.role); changed = true; }
+      if (x.autoB === true && Array.isArray(e.bullets) && e.bullets.length >= 4) { x.bullets = e.bullets.map(String).join('\n'); changed = true; }
+    });
+    if (st.summaryAuto === true && ai.summary && String(ai.summary).length > 40) { st.summary = String(ai.summary); changed = true; }
+    var sk = Array.isArray(ai.skills) ? ai.skills.map(String).filter(Boolean) : [];
+    if (sk.length) {
+      if (st.skillsAuto === true) { st.skills = sk.join(', '); changed = true; }
+      else {
+        var own = String(st.skills || '').split(/[,\n;]+/).map(function (s) { return s.trim(); }).filter(Boolean), have = own.map(function (s) { return s.toLowerCase(); });
+        sk.forEach(function (s) { if (have.indexOf(s.toLowerCase()) < 0) { own.push(s); changed = true; } }); st.skills = own.join(', ');
+      }
+    }
+    return changed;
+  }
+  w.FHTailor = { apply: apply, keywords: keywords, aiPayload: aiPayload, applyAI: applyAI };
 })(window);

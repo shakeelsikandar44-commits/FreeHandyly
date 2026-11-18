@@ -239,6 +239,20 @@
     state.jd = (ttl ? 'Job title: ' + ttl + '\n' : '') + main + '\n' + pref;
     KW = window.FHTailor.apply(state); fillForm(); render(); save();
     $('rs-score').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    /* AI polish: the built-in writer above is already on screen; if the AI is slow or fails we simply keep it. */
+    var btn = $('rs-tailor'), note = $('rs-ai-note'), snap = state, label = btn.textContent;
+    if (!window.fetch || !window.FHTailor.aiPayload) { return; }
+    var ctl = window.AbortController ? new AbortController() : null, timer = setTimeout(function () { if (ctl) { ctl.abort(); } }, 55000);
+    btn.disabled = true; btn.textContent = 'Improving with AI...'; note.textContent = '';
+    fetch('/api/resume-ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(window.FHTailor.aiPayload(state, KW)), signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { if (!r.ok) { throw new Error('ai ' + r.status); } return r.json(); })
+      .then(function (ai) {
+        if (state !== snap) { return; }
+        if (window.FHTailor.applyAI(state, ai)) { fillForm(); render(); save(); note.textContent = 'Wording improved with AI. Please read it and edit anything that is not true for you.'; }
+        else { note.textContent = 'Built-in writer used. Edit anything that is not true for you.'; }
+      })
+      .catch(function () { note.textContent = 'The AI writer is busy, so the built-in writer was used. You can press the button again in a minute.'; })
+      .then(function () { clearTimeout(timer); btn.disabled = false; btn.textContent = label; });
   });
 
   /* ----------------------------------------------------------------- init */

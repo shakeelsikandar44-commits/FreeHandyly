@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 from flask import Flask, Response, redirect, request, send_from_directory
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+import resume_ai
 from rates import get_rates
 
 BASE = Path(__file__).resolve().parent
@@ -334,6 +335,31 @@ def api_rates():
     return resp
 
 
+
+
+@app.post("/api/resume-ai")
+def api_resume_ai():
+    """AI wording for the Resume Maker (see resume_ai.py). The browser falls back to its built-in writer on any error."""
+    def reply(obj, status=200):
+        resp = Response(json.dumps(obj), status=status, mimetype="application/json")
+        resp.headers["Cache-Control"] = "no-store"
+        resp.headers["X-Robots-Tag"] = "noindex"
+        return resp
+    origin = request.headers.get("Origin")
+    if origin and urlparse(origin).netloc != request.host:
+        return reply({"error": "Forbidden"}, 403)
+    if not resume_ai.configured():
+        return reply({"error": "The AI writer is not available right now."}, 503)
+    try:
+        inp = resume_ai.clean_input(request.get_json(silent=True))
+    except resume_ai.BadInput:
+        return reply({"error": "Please add the job details first."}, 400)
+    if not resume_ai.check_rate(request.remote_addr or "?"):
+        return reply({"error": "Too many AI requests. Please try again later."}, 429)
+    try:
+        return reply(resume_ai.run(inp))
+    except resume_ai.AIUnavailable:
+        return reply({"error": "The AI writer is busy right now."}, 503)
 
 
 from seo_routes import seo  # noqa: E402  (robots.txt, sitemap.xml, ads.txt)
