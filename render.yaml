@@ -36,3 +36,5 @@ services:
       # Resume Maker AI writer (Ollama Cloud key from ollama.com > Keys).
       - key: OLLAMA_API_KEY
         sync: false
+      - key: GEMINI_API_KEY
+        sync: false

@@ -229,3 +229,29 @@ def test_resume_ai_rate_limit(client, monkeypatch):
     codes = [client.post("/api/resume-ai", json=_ai_payload()).status_code for _ in range(3)]
     assert codes == [200, 200, 429]
     resume_ai._HITS.clear()
+
+
+def test_resume_ai_gemini_provider(client, monkeypatch):
+    import io
+    import json as _json
+    import resume_ai
+    monkeypatch.setenv("GEMINI_API_KEY", "g-test-key")
+    monkeypatch.delenv("OLLAMA_API_KEY", raising=False)
+    resume_ai._HITS.clear()
+    seen = {}
+
+    class Resp(io.BytesIO):
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+
+    def fake_urlopen(req, timeout=0):
+        seen["url"], seen["key"], seen["body"] = req.full_url, req.get_header("X-goog-api-key"), _json.loads(req.data)
+        text = _json.dumps({"summary": "S" * 70, "skills": ["Claims"], "employers": [{"role": "Billing Specialist", "bullets": ["Review claims for accuracy before submission"] * 1}, {"role": "Billing Clerk", "bullets": []}]})
+        return Resp(_json.dumps({"candidates": [{"content": {"parts": [{"text": text}]}}]}).encode())
+
+    monkeypatch.setattr(resume_ai.urllib.request, "urlopen", fake_urlopen)
+    r = client.post("/api/resume-ai", json=_ai_payload())
+    assert r.status_code == 200 and r.get_json()["skills"] == ["Claims"]
+    assert seen["key"] == "g-test-key" and "generativelanguage.googleapis.com" in seen["url"] and "key=" not in seen["url"]
+    assert seen["body"]["systemInstruction"]["parts"][0]["text"] and "g-test-key" not in _json.dumps(seen["body"])
+    resume_ai._HITS.clear()

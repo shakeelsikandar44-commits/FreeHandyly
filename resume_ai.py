@@ -1,10 +1,12 @@
-"""AI writer for the Resume Maker, using the Ollama Cloud API.
+"""AI writer for the Resume Maker. Uses Google Gemini (free tier) when GEMINI_API_KEY is set, otherwise Ollama Cloud
+(OLLAMA_API_KEY, paid credits).
 
-The API key is read only from the OLLAMA_API_KEY environment variable (set it in Render). It is never sent to
+API keys are read only from environment variables (set them in Render). They are never sent to
 the browser and never logged. Only the job advert text, the job dates and a few keywords are sent to the AI:
 no name, contact details, employer names or photo. If anything fails, the page keeps using its built-in writer.
 
 Optional environment variables:
+  GEMINI_MODEL         Gemini model name (default gemini-2.5-flash)
   OLLAMA_MODEL         model name (default gpt-oss:120b)
   OLLAMA_API_URL       chat endpoint (default https://ollama.com/api/chat)
   OLLAMA_TIMEOUT       seconds to wait for the AI (default 45)
@@ -18,6 +20,7 @@ import re
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from collections import defaultdict, deque
 
@@ -25,6 +28,7 @@ log = logging.getLogger("freehandyly.resume_ai")
 
 API_URL = "https://ollama.com/api/chat"
 DEFAULT_MODEL = "gpt-oss:120b"
+DEFAULT_GEMINI = "gemini-2.5-flash"
 COUNTS = [10, 9, 8]  # bullets for the newest, second and older positions (same as the built-in writer)
 
 
@@ -37,7 +41,7 @@ class AIUnavailable(Exception):
 
 
 def configured():
-    return bool(os.environ.get("OLLAMA_API_KEY", "").strip())
+    return bool(os.environ.get("GEMINI_API_KEY", "").strip() or os.environ.get("OLLAMA_API_KEY", "").strip())
 
 
 # ------------------------------------------------------------------ rate limit (in memory, per worker)
@@ -126,7 +130,34 @@ def build_messages(inp):
     return [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
 
 
-# ------------------------------------------------------------------ Ollama call
+# ------------------------------------------------------------------ AI providers
+def _post(req, label):
+    try:
+        with urllib.request.urlopen(req, timeout=int(os.environ.get("OLLAMA_TIMEOUT", "45"))) as resp:
+            return json.loads(resp.read(2_000_000).decode("utf-8"))
+    except urllib.error.HTTPError as exc:  # 401/403 = wrong key, 402/429 = credits or free limit used up, 404 = wrong model name
+        log.warning("%s returned HTTP %s", label, exc.code)
+        raise AIUnavailable("%s HTTP %s" % (label, exc.code))
+    except Exception as exc:  # noqa: BLE001 - never leak details (or the key) to visitors
+        log.warning("%s call failed: %s", label, type(exc).__name__)
+        raise AIUnavailable("%s error" % label)
+
+
+def _call_gemini(messages):
+    key = os.environ.get("GEMINI_API_KEY", "").strip()
+    model = os.environ.get("GEMINI_MODEL") or DEFAULT_GEMINI
+    system = "\n".join(m["content"] for m in messages if m["role"] == "system")
+    user = "\n".join(m["content"] for m in messages if m["role"] == "user")
+    body = json.dumps({"systemInstruction": {"parts": [{"text": system}]},
+                       "contents": [{"role": "user", "parts": [{"text": user}]}],
+                       "generationConfig": {"temperature": 0.6, "responseMimeType": "application/json"}}).encode("utf-8")
+    url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % urllib.parse.quote(model, safe="")
+    req = urllib.request.Request(url, data=body, method="POST", headers={"x-goog-api-key": key, "Content-Type": "application/json"})
+    data = _post(req, "Gemini")
+    parts = ((((data.get("candidates") or [{}])[0]).get("content") or {}).get("parts")) or []
+    return "".join(str(p.get("text") or "") for p in parts if isinstance(p, dict))
+
+
 def _call_ollama(messages):
     key = os.environ.get("OLLAMA_API_KEY", "").strip()
     if not key:
@@ -135,16 +166,15 @@ def _call_ollama(messages):
                        "stream": False, "options": {"temperature": 0.6}}).encode("utf-8")
     req = urllib.request.Request(os.environ.get("OLLAMA_API_URL") or API_URL, data=body, method="POST",
                                  headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=int(os.environ.get("OLLAMA_TIMEOUT", "45"))) as resp:
-            data = json.loads(resp.read(2_000_000).decode("utf-8"))
-    except urllib.error.HTTPError as exc:  # 401 = wrong key, 402/429 = credits or limit used up, 404 = wrong model name
-        log.warning("Ollama returned HTTP %s", exc.code)
-        raise AIUnavailable("upstream HTTP %s" % exc.code)
-    except Exception as exc:  # noqa: BLE001 - never leak details (or the key) to visitors
-        log.warning("Ollama call failed: %s", type(exc).__name__)
-        raise AIUnavailable("upstream error")
+    data = _post(req, "Ollama")
     return str((data.get("message") or {}).get("content") or "")
+
+
+def _call_model(messages):
+    """Gemini first (free tier) when its key is set, otherwise Ollama."""
+    if os.environ.get("GEMINI_API_KEY", "").strip():
+        return _call_gemini(messages)
+    return _call_ollama(messages)
 
 
 # ------------------------------------------------------------------ output
@@ -195,4 +225,4 @@ def clean_output(obj, inp):
 
 def run(inp):
     """inp comes from clean_input(). Returns the cleaned AI result or raises AIUnavailable."""
-    return clean_output(_parse(_call_ollama(build_messages(inp))), inp)
+    return clean_output(_parse(_call_model(build_messages(inp))), inp)
