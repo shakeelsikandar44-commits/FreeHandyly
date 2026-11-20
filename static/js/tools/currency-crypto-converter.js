@@ -14,8 +14,8 @@
     'IQD IRR ISK JMD JOD JPY KES KGS KHR KMF KRW KWD KYD KZT LAK LBP LKR LRD LSL LYD MAD MDL MGA MKD MMK MNT MOP MRU MUR MVR MWK ' +
     'MXN MYR MZN NAD NGN NIO NOK NPR NZD OMR PAB PEN PGK PHP PKR PLN PYG QAR RON RSD RUB RWF SAR SBD SCR SDG SEK SGD SHP SLL SOS ' +
     'SRD SSP STN SYP SZL THB TJS TMT TND TOP TRY TTD TWD TZS UAH UGX USD UYU UZS VES VND VUV WST XAF XCD XOF XPF YER ZAR ZMW ZWL').split(' ');
-  var CRYPTO = ['BTC', 'ETH', 'USDT', 'BNB', 'SOL', 'XRP', 'DOGE', 'LTC', 'ADA', 'TRX', 'USDC', 'DOT'];
-  var CRYPTO_NAMES = { BTC: 'Bitcoin', ETH: 'Ethereum', USDT: 'Tether', BNB: 'BNB', SOL: 'Solana', XRP: 'XRP', DOGE: 'Dogecoin', LTC: 'Litecoin', ADA: 'Cardano', TRX: 'TRON', USDC: 'USD Coin', DOT: 'Polkadot' };
+  var CRYPTO = ['BTC', 'ETH', 'USDT', 'BNB', 'SOL', 'XRP', 'DOGE', 'LTC', 'ADA', 'TRX', 'USDC', 'DOT', 'XMR', 'SHIB', 'PEPE', 'BCH', 'AVAX', 'LINK'];
+  var CRYPTO_NAMES = { BTC: 'Bitcoin', ETH: 'Ethereum', USDT: 'Tether', BNB: 'BNB', SOL: 'Solana', XRP: 'XRP', DOGE: 'Dogecoin', LTC: 'Litecoin', ADA: 'Cardano', TRX: 'TRON', USDC: 'USD Coin', DOT: 'Polkadot', XMR: 'Monero', SHIB: 'Shiba Inu', PEPE: 'Pepe', BCH: 'Bitcoin Cash', AVAX: 'Avalanche', LINK: 'Chainlink' };
   var POPULAR = ['USD', 'PKR', 'EUR', 'GBP', 'AED', 'SAR', 'INR', 'JPY', 'CNY', 'CAD', 'AUD', 'CHF', 'TRY', 'BDT', 'QAR', 'KWD', 'OMR', 'MYR', 'SGD', 'THB'];
   var QUICK = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000];
   var SOURCES = [
