@@ -205,9 +205,30 @@
   }
   window.addEventListener('beforeprint', prepPrint);
   window.addEventListener('afterprint', cleanupPrint);
+  /* After a download, offer to clear everything job-specific (job description, title, summary, skills, position
+     titles/bullets, certifications) so the next resume starts clean. Name, contact, links, education, languages and
+     employer name/place/dates stay. afterprint also fires on Cancel, so we ask first instead of deleting silently. */
+  var resetAfterPrint = false;
+  function resetJobData() {
+    state.jd = ''; state.jdTitle = ''; state.jdMain = ''; state.jdPref = '';
+    state.title = ''; state.titleAuto = true; state.summary = ''; state.summaryAuto = true; state.skills = ''; state.skillsAuto = true;
+    state.extra = [];
+    (state.exp || []).forEach(function (x) { x.role = ''; x.autoT = true; x.bullets = ''; x.autoB = true; });
+    KW = [];
+    var note = $('rs-ai-note'); if (note) { note.textContent = ''; }
+    fillForm(); render(); save();
+  }
+  window.addEventListener('afterprint', function () {
+    if (!resetAfterPrint) { return; }
+    resetAfterPrint = false;
+    setTimeout(function () {
+      if (window.confirm('Downloaded? Clear the job description, title, summary, skills and certificates for your next resume? (Your name, contact details, education and employers stay.)')) { resetJobData(); }
+    }, 300);
+  });
   $('rs-download').addEventListener('click', function () {
     prepPrint();                                   /* explicit: some browsers never fire beforeprint */
     setTimeout(cleanupPrint, 120000);              /* safety net if afterprint is never fired */
+    resetAfterPrint = true;
     window.print();
   });
 
