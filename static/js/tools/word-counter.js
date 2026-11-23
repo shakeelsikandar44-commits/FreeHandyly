@@ -4,7 +4,7 @@
 
   var READ_WPM = 225;
   var SPEAK_WPM = 130;
-  var SAMPLE = 'FreeHandyly is a collection of free online tools. Each tool runs in your browser, so your text stays private.\n\n' +
+  var SAMPLE = 'FreeHandyly is a collection of free online tools. Most tools run in your browser, so your text stays private.\n\n' +
     'Try pasting an article, an essay or a product description here. The counter updates as you type, shows how long the text takes to read, ' +
     'and highlights the keywords you use most. Good writing is clear, specific and easy to read. Clear writing helps readers and search engines alike.';
 
