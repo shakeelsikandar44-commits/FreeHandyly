@@ -1,5 +1,4 @@
-"""AI writer for the Resume Maker. Uses Google Gemini (free tier) when GEMINI_API_KEY is set, otherwise Ollama Cloud
-(OLLAMA_API_KEY, paid credits).
+"""AI writer for the Resume Maker. Uses Google Gemini (free tier) when GEMINI_API_KEY is set.
 
 API keys are read only from environment variables (set them in Render). They are never sent to
 the browser and never logged. Only the job advert text, the job dates and a few keywords are sent to the AI:
@@ -7,9 +6,7 @@ no name, contact details, employer names or photo. If anything fails, the page k
 
 Optional environment variables:
   GEMINI_MODEL         Gemini model name (default: tries gemini-3.1-flash-lite, then gemini-3-flash-preview)
-  OLLAMA_MODEL         model name (default gpt-oss:120b)
-  OLLAMA_API_URL       chat endpoint (default https://ollama.com/api/chat)
-  OLLAMA_TIMEOUT       seconds to wait for the AI (default 45)
+  RESUME_AI_TIMEOUT    seconds to wait for the AI (default 45)
   RESUME_AI_PER_HOUR   calls allowed per visitor IP per hour (default 8)
   RESUME_AI_PER_DAY    calls allowed for the whole site per day (default 300)
 """
@@ -26,8 +23,6 @@ from collections import defaultdict, deque
 
 log = logging.getLogger("freehandyly.resume_ai")
 
-API_URL = "https://ollama.com/api/chat"
-DEFAULT_MODEL = "gpt-oss:120b"
 GEMINI_MODELS = ["gemini-3.1-flash-lite", "gemini-3-flash-preview", "gemini-2.5-flash"]  # tried in order when a name returns 404
 COUNTS = [10, 9, 8]  # bullets for the newest, second and older positions (same as the built-in writer)
 
@@ -41,7 +36,7 @@ class AIUnavailable(Exception):
 
 
 def configured():
-    return bool(os.environ.get("GEMINI_API_KEY", "").strip() or os.environ.get("OLLAMA_API_KEY", "").strip())
+    return bool(os.environ.get("GEMINI_API_KEY", "").strip())
 
 
 # ------------------------------------------------------------------ rate limit (in memory, per worker)
@@ -133,7 +128,7 @@ def build_messages(inp):
 # ------------------------------------------------------------------ AI providers
 def _post(req, label):
     try:
-        with urllib.request.urlopen(req, timeout=int(os.environ.get("OLLAMA_TIMEOUT", "45"))) as resp:
+        with urllib.request.urlopen(req, timeout=int(os.environ.get("RESUME_AI_TIMEOUT", "45"))) as resp:
             return json.loads(resp.read(2_000_000).decode("utf-8"))
     except urllib.error.HTTPError as exc:  # 401/403 = wrong key, 402/429 = credits or free limit used up, 404 = wrong model name
         log.warning("%s returned HTTP %s", label, exc.code)
@@ -167,23 +162,11 @@ def _call_gemini(messages):
     raise last
 
 
-def _call_ollama(messages):
-    key = os.environ.get("OLLAMA_API_KEY", "").strip()
-    if not key:
-        raise AIUnavailable("no API key set")
-    body = json.dumps({"model": os.environ.get("OLLAMA_MODEL") or DEFAULT_MODEL, "messages": messages,
-                       "stream": False, "options": {"temperature": 0.6}}).encode("utf-8")
-    req = urllib.request.Request(os.environ.get("OLLAMA_API_URL") or API_URL, data=body, method="POST",
-                                 headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"})
-    data = _post(req, "Ollama")
-    return str((data.get("message") or {}).get("content") or "")
-
-
 def _call_model(messages):
-    """Gemini first (free tier) when its key is set, otherwise Ollama."""
-    if os.environ.get("GEMINI_API_KEY", "").strip():
-        return _call_gemini(messages)
-    return _call_ollama(messages)
+    """Google Gemini is the only AI provider."""
+    if not os.environ.get("GEMINI_API_KEY", "").strip():
+        raise AIUnavailable("no API key set")
+    return _call_gemini(messages)
 
 
 # ------------------------------------------------------------------ output

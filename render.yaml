@@ -33,8 +33,6 @@ services:
         sync: false
       - key: CONTACT_FROM
         sync: false
-      # Resume Maker AI writer (Ollama Cloud key from ollama.com > Keys).
-      - key: OLLAMA_API_KEY
-        sync: false
+      # Resume Maker AI writer (Google Gemini key from aistudio.google.com).
       - key: GEMINI_API_KEY
         sync: false

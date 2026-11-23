@@ -186,18 +186,18 @@ def _ai_payload():
 
 
 def test_resume_ai_without_key_is_503_and_validates_input(client, monkeypatch):
-    monkeypatch.delenv("OLLAMA_API_KEY", raising=False)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     assert client.post("/api/resume-ai", json=_ai_payload()).status_code == 503
-    monkeypatch.setenv("OLLAMA_API_KEY", "test-key")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
     assert client.post("/api/resume-ai", json={"jd": "short", "employers": []}).status_code == 400
     assert client.post("/api/resume-ai", data="nope").status_code == 400
     assert client.post("/api/resume-ai", json=_ai_payload(), headers={"Origin": "https://evil.example"}).status_code == 403
 
 
-def test_resume_ai_with_mocked_ollama(client, monkeypatch):
+def test_resume_ai_with_mocked_gemini(client, monkeypatch):
     import json as _json
     import resume_ai
-    monkeypatch.setenv("OLLAMA_API_KEY", "test-key")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
     resume_ai._HITS.clear()
     seen = {}
 
@@ -208,7 +208,7 @@ def test_resume_ai_with_mocked_ollama(client, monkeypatch):
             "skills": ["Claims Review", "claims review", "Denials", "Payment Posting"],
             "employers": [{"role": "Medical Billing Specialist", "bullets": ["Review claims for accuracy before submission to payers", "Submit clean claims to payers within agreed deadlines", "Review again", "Follow up on denials and track appeals to completion daily"]},
                           {"role": "Associate Medical Billing Specialist", "bullets": ["Reconcile payments against remittances every day", "Submit batches", "Resolve payer questions quickly and document each outcome"]}]}) + "\n```"
-    monkeypatch.setattr(resume_ai, "_call_ollama", fake)
+    monkeypatch.setattr(resume_ai, "_call_gemini", fake)
     r = client.post("/api/resume-ai", json=_ai_payload())
     assert r.status_code == 200
     data = r.get_json()
@@ -222,10 +222,10 @@ def test_resume_ai_with_mocked_ollama(client, monkeypatch):
 
 def test_resume_ai_rate_limit(client, monkeypatch):
     import resume_ai
-    monkeypatch.setenv("OLLAMA_API_KEY", "test-key")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
     monkeypatch.setenv("RESUME_AI_PER_HOUR", "2")
     resume_ai._HITS.clear()
-    monkeypatch.setattr(resume_ai, "_call_ollama", lambda m: '{"summary": "' + "x" * 60 + '", "skills": [], "employers": []}')
+    monkeypatch.setattr(resume_ai, "_call_gemini", lambda m: '{"summary": "' + "x" * 60 + '", "skills": [], "employers": []}')
     codes = [client.post("/api/resume-ai", json=_ai_payload()).status_code for _ in range(3)]
     assert codes == [200, 200, 429]
     resume_ai._HITS.clear()
@@ -236,7 +236,6 @@ def test_resume_ai_gemini_provider(client, monkeypatch):
     import json as _json
     import resume_ai
     monkeypatch.setenv("GEMINI_API_KEY", "g-test-key")
-    monkeypatch.delenv("OLLAMA_API_KEY", raising=False)
     resume_ai._HITS.clear()
     seen = {}
 
