@@ -17,12 +17,11 @@ def _site():
 
 
 def _lastmod():
-    """SITEMAP_LASTMOD (YYYY-MM-DD) if set, otherwise the date of the newest page file."""
-    d = os.environ.get("SITEMAP_LASTMOD")
-    if d:
-        return d
-    newest = max(p.stat().st_mtime for p in (BASE / "pages").rglob("*.html"))
-    return datetime.date.fromtimestamp(newest).isoformat()
+    """SITEMAP_LASTMOD (YYYY-MM-DD) if set, otherwise None (no <lastmod> tag).
+
+    File dates on a host like Render are the deploy time for every page, which makes <lastmod> identical and
+    inaccurate; Google ignores lastmod from sites where it is not reliable, so we only emit it when set by hand."""
+    return os.environ.get("SITEMAP_LASTMOD") or None
 
 
 @seo.route("/robots.txt")
@@ -34,7 +33,8 @@ def robots():
 @seo.route("/sitemap.xml")
 def sitemap():
     base, lm = _site(), _lastmod()
-    rows = "".join("  <url><loc>%s%s</loc><lastmod>%s</lastmod></url>\n" % (base, p, lm) for p in PAGES)
+    tag = "<lastmod>%s</lastmod>" % lm if lm else ""
+    rows = "".join("  <url><loc>%s%s</loc>%s</url>\n" % (base, p, tag) for p in PAGES)
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % rows
     return Response(xml, mimetype="application/xml")
 
