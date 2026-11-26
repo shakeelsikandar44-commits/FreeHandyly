@@ -278,3 +278,56 @@ def test_gemini_tries_next_model_on_404(monkeypatch):
     monkeypatch.setattr(resume_ai.urllib.request, "urlopen", fake_urlopen)
     assert resume_ai._call_gemini([{"role": "system", "content": "s"}, {"role": "user", "content": "u"}]) == "{}"
     assert len(calls) == 2 and "gemini-3.1-flash-lite" in calls[0] and "gemini-3-flash-preview" in calls[1]
+
+
+def test_review_section_on_every_tool_page(client):
+    import json as _json
+    from app import TOOLS
+    for t in TOOLS:
+        h = get(client, "/tools/" + t["slug"]).get_data(as_text=True)
+        assert 'id="reviews"' in h and 'name="slug" value="%s"' % t["slug"] in h, t["slug"]
+        assert "Be the first to rate" in h and "aggregateRating" not in h
+        assert h.count("/static/js/reviews.js") == 1
+    assert 'id="reviews"' not in get(client, "/").get_data(as_text=True)
+
+
+def test_review_submit_validation_and_delivery(client, monkeypatch):
+    import app as appmod
+    sent = []
+    monkeypatch.setattr(appmod, "deliver", lambda n, e, m, subject=None: sent.append((n, e, m, subject)) or True)
+    appmod.REVIEW_HITS.clear()
+    ok = {"slug": "word-counter", "rating": "5", "name": "Ayesha", "text": "Quick and simple to use."}
+    hdr = {"Accept": "application/json"}
+    r = client.post("/review", data=ok, headers=hdr)
+    assert r.status_code == 200 and r.get_json()["ok"] and len(sent) == 1
+    assert "5/5" in sent[0][3] and "Ayesha" in sent[0][2]
+    for bad in ({**ok, "rating": "0"}, {**ok, "rating": "x"}, {**ok, "name": "A"}, {**ok, "text": "short"}, {**ok, "slug": "nope"}):
+        assert client.post("/review", data=bad, headers=hdr).status_code == 400
+    assert client.post("/review", data={**ok, "website": "spam.com"}, headers=hdr).status_code == 200
+    assert len(sent) == 1  # honeypot and invalid submissions are not delivered
+    assert client.post("/review", data=ok, headers={**hdr, "Origin": "https://evil.example"}).status_code == 403
+    r = client.post("/review", data=ok)  # no JS: plain page, not JSON
+    assert r.status_code == 200 and "Thanks" in r.get_data(as_text=True) and r.headers["X-Robots-Tag"] == "noindex"
+
+
+def test_review_rate_limit(client, monkeypatch):
+    import app as appmod
+    monkeypatch.setattr(appmod, "deliver", lambda *a, **k: True)
+    appmod.REVIEW_HITS.clear()
+    ok = {"slug": "bmi-calculator", "rating": "4", "name": "Sam", "text": "Works as expected, thanks."}
+    codes = [client.post("/review", data=ok, headers={"Accept": "application/json"}).status_code for _ in range(5)]
+    assert codes == [200, 200, 200, 429, 429]
+
+
+def test_reviews_render_and_schema(client, monkeypatch):
+    import app as appmod
+    import json as _json
+    items = [{"name": "Ali <b>", "rating": r, "text": "Good tool, really.", "date": "2026-12-01"} for r in (5, 4, 5)]
+    monkeypatch.setattr(appmod, "REVIEWS", {"word-counter": items, "bmi-calculator": items[:2]})
+    h = get(client, "/tools/word-counter").get_data(as_text=True)
+    assert "Ali &lt;b&gt;" in h and "3 reviews" in h
+    ld = [_json.loads(m) for m in __import__("re").findall(r'<script type="application/ld\+json">(.*?)</script>', h, __import__("re").S)]
+    app_node = [n for d in ld for n in d.get("@graph", []) if n.get("@type") == "WebApplication"][0]
+    assert app_node["aggregateRating"]["ratingCount"] == 3 and app_node["aggregateRating"]["ratingValue"] == 4.7
+    h2 = get(client, "/tools/bmi-calculator").get_data(as_text=True)  # only 2 reviews: shown, but no rating schema yet
+    assert "2 reviews" in h2 and "aggregateRating" not in h2

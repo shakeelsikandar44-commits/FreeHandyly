@@ -55,6 +55,9 @@ PAGE_FILES.update({"/tools/" + t["slug"]: "tools/%s.html" % t["slug"] for t in T
 HTML = {path: (BASE / "pages" / f).read_text(encoding="utf-8") for path, f in PAGE_FILES.items()}
 SHELL = (BASE / "pages" / "_shell.html").read_text(encoding="utf-8")
 esc = html.escape
+import reviews as reviews_mod
+REVIEWS = reviews_mod.load_reviews()
+TOOL_NAMES = {t["slug"]: t["name"] for t in TOOLS}
 
 
 def site_url():
@@ -98,7 +101,11 @@ def shell_response(title, desc, main, status=200):
 
 def make_view(path):
     def view():
-        return page_response(HTML[path])
+        body = HTML[path]
+        if path.startswith("/tools/"):
+            slug = path.split("/")[-1]
+            body = reviews_mod.inject(body, slug, TOOL_NAMES.get(slug, "tool"), REVIEWS)
+        return page_response(body)
     return view
 
 
@@ -225,7 +232,7 @@ def render_contact(values=None, errors=None, alert="", status=200):
     return page_response(body, status, cache="no-store")
 
 
-def deliver(name, email, message):
+def deliver(name, email, message, subject=None):
     """Always append to a local log, and e-mail the message when SMTP is configured. Returns True if either worked."""
     ok = False
     record = {"time": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "name": name, "email": email, "message": message}
@@ -244,7 +251,7 @@ def deliver(name, email, message):
                 "sender": {"name": "FreeHandyly Contact Form", "email": os.environ.get("CONTACT_FROM") or os.environ.get("CONTACT_TO", "contact@freehandyly.com")},
                 "to": [{"email": os.environ.get("CONTACT_TO", "contact@freehandyly.com")}],
                 "replyTo": {"email": email, "name": name},
-                "subject": "FreeHandyly contact form: %s" % name[:60],
+                "subject": subject or "FreeHandyly contact form: %s" % name[:60],
                 "textContent": "From: %s <%s>\n\n%s\n" % (name, email, message),
             }).encode("utf-8")
             req = urllib.request.Request("https://api.brevo.com/v3/smtp/email", data=payload, method="POST",
@@ -257,7 +264,7 @@ def deliver(name, email, message):
     if host and not api_key:
         try:
             msg = EmailMessage()
-            msg["Subject"] = "FreeHandyly contact form: %s" % name[:60]
+            msg["Subject"] = subject or "FreeHandyly contact form: %s" % name[:60]
             msg["From"] = os.environ.get("CONTACT_FROM") or os.environ.get("SMTP_USER") or "noreply@localhost"
             msg["To"] = os.environ.get("CONTACT_TO", "contact@freehandyly.com")
             msg["Reply-To"] = email
@@ -302,6 +309,57 @@ def contact():
     if deliver(values["name"], values["email"], values["message"]):
         return render_contact(alert='<div class="alert alert-success" role="alert"><strong>Thank you!</strong> Your message has been sent. We will reply as soon as we can.</div>')
     return render_contact(values, None, '<div class="alert alert-danger" role="alert">Sorry, we could not send your message. Please email us directly.</div>', 502)
+
+
+# ------------------------------------------------------------------ reviews
+REVIEW_HITS = defaultdict(deque)
+REVIEW_LIMIT, REVIEW_WINDOW = 3, 3600
+
+
+@app.post("/review")
+def submit_review():
+    wants_json = "application/json" in request.headers.get("Accept", "")
+    origin = request.headers.get("Origin")
+    if origin and urlparse(origin).netloc != request.host:
+        return Response("Forbidden", status=403)
+
+    def reply(ok, msg, status=200, slug=None):
+        if wants_json:
+            return Response(json.dumps({"ok": ok, "message": msg}), status=status, mimetype="application/json")
+        back = '<p><a href="/tools/%s#reviews">Back to the tool</a></p>' % esc(slug) if slug in TOOL_NAMES else '<p><a href="/">Go to the home page</a></p>'
+        resp = shell_response("Rate this tool", msg, '<div class="container page-narrow legal"><h1>%s</h1>%s</div>' % (esc(msg), back), status)
+        resp.headers["X-Robots-Tag"] = "noindex"
+        return resp
+
+    f = request.form
+    slug = f.get("slug", "")
+    if f.get("website"):  # honeypot: bots fill it, people never see it
+        return reply(True, "Thanks, your review will appear after we check it.", slug=slug)
+    if slug not in TOOL_NAMES:
+        return reply(False, "Please choose a tool and try again.", 400, slug)
+    name = re.sub(r"\s+", " ", f.get("name", "")).strip()
+    text = f.get("text", "").strip()
+    try:
+        rating = int(f.get("rating", "0"))
+    except ValueError:
+        rating = 0
+    if not 1 <= rating <= 5:
+        return reply(False, "Choose a star rating first.", 400, slug)
+    if not 2 <= len(name) <= 80:
+        return reply(False, "Please enter your name.", 400, slug)
+    if not 10 <= len(text) <= 1500:
+        return reply(False, "Please write a review of at least 10 characters.", 400, slug)
+    now, hits = time.time(), REVIEW_HITS[request.remote_addr or "?"]
+    while hits and now - hits[0] > REVIEW_WINDOW:
+        hits.popleft()
+    if len(hits) >= REVIEW_LIMIT:
+        return reply(False, "Too many reviews from your network. Please try again later.", 429, slug)
+    hits.append(now)
+    body = "Tool: %s (/tools/%s)\nRating: %d/5\nName: %s\n\n%s\n\nTo publish: add it to data/reviews.json." % (TOOL_NAMES[slug], slug, rating, name, text)
+    to = os.environ.get("CONTACT_TO", "contact@freehandyly.com")
+    if deliver("Review: " + name, to, body, subject="FreeHandyly review: %s, %d/5" % (TOOL_NAMES[slug], rating)):
+        return reply(True, "Thanks, your review will appear after we check it.", slug=slug)
+    return reply(False, "Sorry, we could not send your review. Please try again later.", 502, slug)
 
 
 # ------------------------------------------------------------------ errors

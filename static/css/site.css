@@ -604,3 +604,30 @@ img, svg { max-width: 100%; }
 .related-card span { font-size: .85rem; color: var(--ink-soft); line-height: 1.35; }
 .related-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); border-color: #B9CCE8; color: var(--ink); }
 @media (max-width: 767px) { .related-grid { grid-template-columns: 1fr; } }
+
+/* ---- reviews ---- */
+.reviews { margin-top: 2.2rem; max-width: 76ch; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.4rem 1.5rem; box-shadow: var(--shadow-sm); }
+.reviews h2 { font-size: 1.45rem; font-weight: 800; margin: 0 0 .4rem; }
+.rv-summary { margin: 0 0 1rem; color: var(--ink-soft); }
+.rv-star { color: #C9D3E3; font-size: 1.15rem; }
+.rv-star.on { color: #E8A100; }
+.rv-list { list-style: none; padding: 0; margin: 0 0 1.4rem; }
+.rv-item { padding: .9rem 0; border-top: 1px solid var(--line); }
+.rv-item p { margin: .35rem 0 0; }
+.rv-head { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.rv-date { color: var(--ink-soft); font-size: .88rem; }
+.rv-form label { display: block; font-weight: 600; font-size: .92rem; margin: .8rem 0 .3rem; }
+.rv-form .form-control { width: 100%; }
+.rv-rating { border: 0; padding: 0; margin: 0; }
+.rv-rating legend { font-weight: 600; font-size: .92rem; margin: 0 0 .3rem; float: none; width: auto; }
+.rv-stars-in { display: inline-flex; flex-direction: row-reverse; gap: 4px; }
+.rv-stars-in input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.rv-stars-in label { margin: 0; cursor: pointer; line-height: 0; padding: 2px; border-radius: 6px; }
+.rv-stars-in svg { fill: none; stroke: #8493AD; transition: fill .15s, stroke .15s; }
+.rv-stars-in input:checked ~ label svg, .rv-stars-in label:hover svg, .rv-stars-in label:hover ~ label svg { fill: #E8A100; stroke: #B07A00; }
+.rv-stars-in input:focus-visible + label { outline: 3px solid var(--blue); outline-offset: 2px; }
+.rv-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.rv-msg { min-height: 1.3rem; margin: .5rem 0; font-size: .92rem; }
+.rv-msg.err { color: var(--danger); }
+.rv-msg.ok { color: var(--ok); font-weight: 600; }
+.rv-note { color: var(--ink-soft); font-size: .85rem; margin: .8rem 0 0; }
