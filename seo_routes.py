@@ -36,7 +36,9 @@ def sitemap():
     tag = "<lastmod>%s</lastmod>" % lm if lm else ""
     rows = "".join("  <url><loc>%s%s</loc>%s</url>\n" % (base, p, tag) for p in PAGES)
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % rows
-    return Response(xml, mimetype="application/xml")
+    resp = Response(xml, mimetype="application/xml")
+    resp.headers["X-Robots-Tag"] = "noindex"  # keep the sitemap file itself out of search results
+    return resp
 
 
 @seo.route("/ads.txt")
