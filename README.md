@@ -2,7 +2,7 @@
 
 Free online tools that run in your browser: a PDF editor (click any text to edit it), image compressor and converter, background remover, word counter, resume maker, calculators and more. No signup, and files never leave the visitor's device.
 
-Live site: https://freehandyly.com (set `SITE_URL` to your own address when you deploy).
+Live site: https://freehandyly.com
 
 ## Tools
 
