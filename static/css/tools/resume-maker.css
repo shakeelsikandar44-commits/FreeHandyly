@@ -40,7 +40,7 @@
 .rs-paper :where(h1, h2, h3, p, ul) { margin: 0; padding: 0; }
 .rs-paper :where(h1, h2, h3) { font-family: inherit; letter-spacing: 0; color: inherit; }
 .rs-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 14px; }
-.rs-name { font-size: 2.3em; font-weight: 800; line-height: 1.1; }
+.rs-name { margin: 0; font-size: 2.3em; font-weight: 800; line-height: 1.1; }
 .rs-jobtitle { font-size: 1.2em; margin-top: 2px; }
 .rs-contact { display: flex; flex-wrap: wrap; gap: 2px 14px; margin-top: 8px; font-size: .92em; }
 .rs-photo { flex: none; width: 88px; height: 88px; border-radius: 50%; object-fit: cover; }

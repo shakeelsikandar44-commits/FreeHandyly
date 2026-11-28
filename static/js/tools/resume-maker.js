@@ -62,7 +62,7 @@
   sizer.style.overflow = 'hidden';
   var FS = { small: '9.5pt', normal: '10.5pt', large: '11.5pt' };
 
-  function section(title) { var s = el('section'); s.appendChild(el('h2', 'rs-h', title)); paper.appendChild(s); return s; }
+  function section(title) { var s = el('section'); s.appendChild(el('div', 'rs-h', title)); paper.appendChild(s); return s; }
   function entry(parent, left, right, sub, bulletText, desc) {
     var e = el('div', 'rs-entry'), line = el('div', 'rs-line');
     line.appendChild(el('span', 'rs-role', left)); if (right) { line.appendChild(el('span', 'rs-date', right)); }
@@ -78,7 +78,7 @@
     paper.textContent = '';
 
     var head = el('div', 'rs-head'), info = el('div', 'rs-info');
-    info.appendChild(el('h1', 'rs-name', fullName() || 'Your Name'));
+    info.appendChild(el('div', 'rs-name', fullName() || 'Your Name'));
     if (state.title) { info.appendChild(el('div', 'rs-jobtitle', state.title)); }
     var contact = el('div', 'rs-contact');
     [state.email, state.phone, state.location, state.link1, state.link2].filter(Boolean).forEach(function (c) { contact.appendChild(el('span', '', c)); });
